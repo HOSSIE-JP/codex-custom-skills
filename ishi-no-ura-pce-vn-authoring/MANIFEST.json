@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "name": "ishi-no-ura-pce-vn-authoring",
+  "version": "2.0.0",
+  "entrypoint": "SKILL.md",
+  "description": "「いしのうらにいる！？」の承認済み設計から台詞と完成PCE VN JSONを生成する第2段階専用スキル",
+  "stage": 2,
+  "requiresHumanApproval": true,
+  "requires": [
+    "approved scenario-design.md",
+    "series-bible.md",
+    "asset-catalog.md",
+    "assets/pce-vn-scenes.json",
+    "assets/pce-assets.json"
+  ],
+  "produces": [
+    "assets/pce-vn-scenes.json",
+    "episode-script.md",
+    "validation-report.md"
+  ],
+  "files": [
+    "SKILL.md",
+    "README.md",
+    "MANIFEST.json",
+    "templates/stage2-input-checklist.md",
+    "templates/blocked-response-template.md",
+    "tools/validate_scenario_approval.py",
+    "examples/review-required-scenario-design.stub.md",
+    "examples/approved-scenario-design.stub.md"
+  ]
+}

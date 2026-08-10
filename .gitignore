@@ -12,8 +12,14 @@
 !/build-gb-studio-visual-novel/**
 !/compose-gb-studio-vn-bgm/
 !/compose-gb-studio-vn-bgm/**
+!/compose-pce-psg/
+!/compose-pce-psg/**
 !/create-gb-studio-visual-novel/
 !/create-gb-studio-visual-novel/**
+!/ishi-no-ura-pce-vn-authoring/
+!/ishi-no-ura-pce-vn-authoring/**
+!/ishi-no-ura-pce-vn-scenario-design/
+!/ishi-no-ura-pce-vn-scenario-design/**
 !/geargrafx-debugging/
 !/geargrafx-debugging/**
 !/xna-to-godot-migration/

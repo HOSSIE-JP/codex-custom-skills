@@ -1,0 +1,12 @@
+interface:
+  display_name: ishi no ura pce vn scenario design
+  short_description: 「いしのうらにいる！？」の新しい話について、台詞やJSONへ進む前のシナリオ設計だけを作る。企画入力を、論点、事実と偏見の区別、キャラクターの立場、シーン別ビート、2回の分岐、因果応報、オチ、イベントスチル計画、アセット計画へ整理し、人間レビュー用のscenario-design.mdとして出力する。台詞全文、画像、pce-vn-scenes.jsonは生成しない。
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

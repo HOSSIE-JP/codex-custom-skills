@@ -1,0 +1,13 @@
+interface:
+  display_name: ishi no ura pce vn authoring
+  short_description: 「いしのうらにいる！？」の新話を、企画整理、自然な会話を成立させるシナリオ設計、台詞執筆、ChatGPT Imageへ人間が投入できるイベントスチル用プロンプト作成、PCE
+    VN JSON組み込み、分岐・文字数・assetId・到達性検査まで段階的に行う。第2話以降の話数制作、PCE VNスクリプト修正、イベントスチル選定・プロンプト設計、HuCARD向け検証を依頼されたときに使う。一般的なPCEエンジン開発や別作品のシナリオには使わない。
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

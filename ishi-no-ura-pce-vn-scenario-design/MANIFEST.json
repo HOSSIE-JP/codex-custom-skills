@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "name": "ishi-no-ura-pce-vn-scenario-design",
+  "version": "1.0.0",
+  "entrypoint": "SKILL.md",
+  "description": "「いしのうらにいる！？」の人間レビュー前提シナリオ設計専用スキル",
+  "stage": 1,
+  "produces": [
+    "scenario-design.md"
+  ],
+  "forbids": [
+    "full-dialogue",
+    "event-still-image",
+    "pce-vn-scenes.json"
+  ],
+  "files": [
+    "SKILL.md",
+    "README.md",
+    "MANIFEST.json",
+    "templates/scenario-design-template.md",
+    "templates/approval-record-template.md"
+  ]
+}

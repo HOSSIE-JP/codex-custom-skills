@@ -5,8 +5,11 @@ This repository tracks only the following custom skills from the local Codex ski
 - `build-gb-studio-game`
 - `build-gb-studio-visual-novel`
 - `compose-gb-studio-vn-bgm`
+- `compose-pce-psg`
 - `create-gb-studio-visual-novel`
 - `geargrafx-debugging`
+- `ishi-no-ura-pce-vn-authoring`
+- `ishi-no-ura-pce-vn-scenario-design`
 - `xna-to-godot-migration`
 
 All other top-level entries are intentionally ignored, including Codex-bundled system skills and skills installed from other sources.
@@ -24,7 +27,7 @@ git -C $skillRoot fetch origin
 git -C $skillRoot switch --track -c main origin/main
 ```
 
-If the destination already contains any of the six tracked skill folders, back them up or reconcile them before checking out the repository. Restart Codex if the skills do not appear automatically.
+If the destination already contains any of the nine tracked skill folders, back them up or reconcile them before checking out the repository. Restart Codex if the skills do not appear automatically.
 
 ## Update workflow
 
@@ -32,7 +35,7 @@ If the destination already contains any of the six tracked skill folders, back t
 $skillRoot = Join-Path $HOME '.codex\skills'
 git -C $skillRoot status --short
 git -C $skillRoot add --update
-git -C $skillRoot add build-gb-studio-game build-gb-studio-visual-novel compose-gb-studio-vn-bgm create-gb-studio-visual-novel geargrafx-debugging xna-to-godot-migration
+git -C $skillRoot add build-gb-studio-game build-gb-studio-visual-novel compose-gb-studio-vn-bgm compose-pce-psg create-gb-studio-visual-novel geargrafx-debugging ishi-no-ura-pce-vn-authoring ishi-no-ura-pce-vn-scenario-design xna-to-godot-migration
 git -C $skillRoot commit -m "Update custom skills"
 git -C $skillRoot push
 ```
