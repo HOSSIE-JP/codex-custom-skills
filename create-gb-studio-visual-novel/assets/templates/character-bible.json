@@ -2,18 +2,111 @@
   "formatVersion": 1,
   "characters": [
     {
-      "id": "hero", "displayName": "主人公", "adult": true, "age": 20,
-      "voice": {"firstPerson": "私", "forbiddenFirstPerson": ["僕", "俺", "自分"], "preferredEndings": ["だね", "かな"], "discouragedPhrases": ["問題ありません"], "humor": "自分の失敗を短く茶化す"},
-      "appearance": {"hair": "replace-with-hair-lock", "eyes": "replace-with-eye-lock", "glasses": "none", "build": "replace-with-build-lock", "prohibitedDrift": ["age drift", "hair color drift", "extra accessories"]},
-      "identityAnchors": ["assets/source_art/anchors/hero-face.png"],
-      "outfits": [{"id": "default", "description": "replace-with-outfit-lock", "anchor": "assets/source_art/anchors/hero-default.png"}]
+      "id": "hero",
+      "displayName": "主人公",
+      "adult": true,
+      "age": 20,
+      "voice": {
+        "firstPerson": "私",
+        "forbiddenFirstPerson": [
+          "僕",
+          "俺",
+          "自分"
+        ],
+        "preferredEndings": [
+          "だね",
+          "かな"
+        ],
+        "discouragedPhrases": [
+          "問題ありません"
+        ],
+        "humor": "自分の失敗を短く茶化す",
+        "termsOfAddress": {
+          "early": "replace-with-early-address",
+          "late": "replace-with-late-address"
+        },
+        "sentenceLength": "replace-with-short-medium-or-variable",
+        "formality": "replace-with-formality-progression",
+        "pressureResponse": "replace-with-behavior-under-pressure"
+      },
+      "appearance": {
+        "hair": "replace-with-hair-lock",
+        "eyes": "replace-with-eye-lock",
+        "glasses": "none",
+        "build": "replace-with-build-lock",
+        "prohibitedDrift": [
+          "age drift",
+          "hair color drift",
+          "extra accessories"
+        ],
+        "proportionLock": "replace-with-head-ratio-body-width-and-limb-length",
+        "rendering": "thick dark outlines, broad opaque flat fills, two or three hard value steps, no gradients"
+      },
+      "identityAnchors": [
+        "assets/source_art/anchors/hero-face.png"
+      ],
+      "outfits": [
+        {
+          "id": "default",
+          "description": "replace-with-outfit-lock",
+          "anchor": "assets/source_art/anchors/hero-default.png",
+          "silhouette": "replace-with-neckline-sleeves-hem-exposed-regions-footwear",
+          "garmentConstruction": "replace-with-opacity-fastening-waist-rise-and-real-garment-details"
+        }
+      ]
     },
     {
-      "id": "partner", "displayName": "相手役", "adult": true, "age": 20,
-      "voice": {"firstPerson": "私", "forbiddenFirstPerson": ["僕", "俺"], "preferredEndings": ["だよ", "でしょ"], "discouragedPhrases": ["以上の理由により"], "humor": "相手の言葉を一段だけひねって返す"},
-      "appearance": {"hair": "replace-with-hair-lock", "eyes": "replace-with-eye-lock", "glasses": "replace-with-glasses-lock", "build": "replace-with-build-lock", "prohibitedDrift": ["age drift", "eye color drift", "outfit mixing"]},
-      "identityAnchors": ["assets/source_art/anchors/partner-face.png"],
-      "outfits": [{"id": "default", "description": "replace-with-outfit-lock", "anchor": "assets/source_art/anchors/partner-default.png"}]
+      "id": "partner",
+      "displayName": "相手役",
+      "adult": true,
+      "age": 20,
+      "voice": {
+        "firstPerson": "私",
+        "forbiddenFirstPerson": [
+          "僕",
+          "俺"
+        ],
+        "preferredEndings": [
+          "だよ",
+          "でしょ"
+        ],
+        "discouragedPhrases": [
+          "以上の理由により"
+        ],
+        "humor": "相手の言葉を一段だけひねって返す",
+        "termsOfAddress": {
+          "early": "replace-with-early-address",
+          "late": "replace-with-late-address"
+        },
+        "sentenceLength": "replace-with-short-medium-or-variable",
+        "formality": "replace-with-formality-progression",
+        "pressureResponse": "replace-with-behavior-under-pressure"
+      },
+      "appearance": {
+        "hair": "replace-with-hair-lock",
+        "eyes": "replace-with-eye-lock",
+        "glasses": "replace-with-glasses-lock",
+        "build": "replace-with-build-lock",
+        "prohibitedDrift": [
+          "age drift",
+          "eye color drift",
+          "outfit mixing"
+        ],
+        "proportionLock": "replace-with-head-ratio-body-width-and-limb-length",
+        "rendering": "thick dark outlines, broad opaque flat fills, two or three hard value steps, no gradients"
+      },
+      "identityAnchors": [
+        "assets/source_art/anchors/partner-face.png"
+      ],
+      "outfits": [
+        {
+          "id": "default",
+          "description": "replace-with-outfit-lock",
+          "anchor": "assets/source_art/anchors/partner-default.png",
+          "silhouette": "replace-with-neckline-sleeves-hem-exposed-regions-footwear",
+          "garmentConstruction": "replace-with-opacity-fastening-waist-rise-and-real-garment-details"
+        }
+      ]
     }
   ]
 }

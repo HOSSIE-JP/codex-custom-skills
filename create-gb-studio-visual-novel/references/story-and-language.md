@@ -7,6 +7,7 @@
 - Branches and joins
 - Character voice
 - Natural Japanese review
+- Repetition and AI-like prose
 - Twist protection
 - Release checklist
 
@@ -14,7 +15,7 @@
 
 Write a brief before dialogue. Lock intended player and rating, first-play duration, point of view, cast limit, emotional promise, state variables, ending thresholds, content boundaries, and dialogue-window capacity.
 
-Create a beat sheet that states what the player understands after each beat. A reader should learn the world in causal order, not as a glossary.
+Create a beat sheet that states what the player understands after each beat. A reader should learn the world in causal order, not as a glossary. Calculate route-history count from the actual option cardinalities and enumerate every history mechanically.
 
 ## Exposition
 
@@ -32,15 +33,15 @@ Fail lines that sound like policy text, release notes, or a plot summary. Warnin
 
 ## Branches and joins
 
-Every choice arm must produce an immediate difference in wording/attitude, background/expression, state, or a later callback. Keep branch-specific responses short enough that a join remains believable. At the join, state only facts true for every arm and carry state explicitly.
+Every choice arm must produce an immediate difference in wording, attitude, background, expression, state, or a later callback. Keep branch-specific responses short enough that a join remains believable. At the join, state only facts true for every arm and carry state explicitly.
 
-For accumulated endings, enumerate all choice histories or generate them mechanically. Verify every threshold and boundary value.
+For accumulated endings, enumerate all choice histories or generate them mechanically. Verify every threshold, boundary value, ending reachability, and reset path. The history count for option pattern `3,2,3,2,3` is 108, not 72.
 
 ## Character voice
 
-Record first-person pronoun, terms of address, sentence length, preferred endings, formality, technical vocabulary, avoided words, joke style, pressure response, and canonical voice examples.
+Record first-person pronoun, terms of address, sentence length, formality, technical vocabulary, preferred endings, avoided words, joke style, pressure response, desire, fear, and canonical voice examples.
 
-Do not reduce gender or identity variation to pronoun substitution. Give variant lines a distinct concern or self-perception while preserving equal agency and ending access.
+Read one character's lines in isolation. A cast member needs a distinct concern and rhythm, not only different pronouns or sentence endings. Track when names, honorifics, and formality change; do not let intimacy appear before the relationship earns it.
 
 ## Natural Japanese review
 
@@ -48,11 +49,11 @@ Perform four separate passes.
 
 ### Mechanical pass
 
-Check NFC, spaces, line endings, repeated punctuation, speaker IDs, choice labels, and route coverage with `lint_vn_japanese.py`.
+Check NFC, spaces, line endings, repeated punctuation, speaker IDs, choice labels, source SHA, and route coverage with `lint_vn_japanese.py`.
 
 ### Read-aloud pass
 
-Read each line as speech. Shorten clauses that require rereading. Remove redundant subjects and connectors. Prefer the kanji/kana balance a speaker would naturally use; do not replace ordinary kanji with awkward partial hiragana merely to look simple.
+Read each line as speech. Shorten clauses that require rereading. Remove redundant subjects and connectors. Prefer ordinary kanji/kana balance. Split a message when the speaker would breathe or change intention, not merely at a character-count boundary.
 
 ### Voice pass
 
@@ -62,11 +63,26 @@ Read only one character's lines in order. Confirm pronouns, vocabulary, rhythm, 
 
 Read scene transitions and every choice arm. Confirm the player has enough context before a decision, branch reactions differ, and joined dialogue does not assume one arm.
 
-Record review status as evidence. An automated report must leave these passes as `required` until a reviewer sets them to `pass` with a note.
+Automated lint must leave these passes as `required`. Do not turn them to `pass` because the same authoring agent reread its own text. Use an independent human or external-model review and retain the notes.
+
+## Repetition and AI-like prose
+
+Search for exact sentences and distinctive sentence tails reused across scenes. Repetition is suspicious when unrelated scenes end with the same reflective phrase, every emotional beat receives an explanatory afterthought, or narration states the theme after dialogue already showed it.
+
+Typical failure modes:
+
+- a poetic stock sentence appended to many scenes;
+- both dialogue and narration restating the same conclusion;
+- uniform sentence length and punctuation across speakers;
+- excessive self-correction used as the only marker of shyness;
+- a joke followed by an explanation of why it is funny;
+- consent or safety language written like policy text instead of a concrete question and answer.
+
+Use the linter's repeated-boilerplate warning as a search aid, not an automatic rewrite instruction. Judge whether repetition is an intentional motif before changing it.
 
 ## Twist protection
 
-Give scenes an explicit reveal phase such as `preReveal`, `reveal`, or `postReveal`. Put forbidden spoiler terms in `language-rules.json`. Search narration, UI, choices, and every gender variant—not only ordinary messages.
+Give scenes an explicit reveal phase such as `preReveal`, `reveal`, or `postReveal`. Put forbidden spoiler terms in `language-rules.json`. Search narration, UI, choices, and every configured variant, not only ordinary messages.
 
 Foreshadow with ambiguous observable details. Do not state the hidden explanation before the reveal boundary.
 
@@ -77,5 +93,6 @@ Foreshadow with ambiguous observable details. Do not state the hidden explanatio
 - Every speaker exists in the bible.
 - Every configured variant has non-empty dialogue.
 - No branch loses state at a join.
+- Exact sentence reuse across scenes is intentional or revised.
 - Static warnings are resolved or documented.
-- All four natural-language reviews are recorded as passed.
+- Independent read-aloud, voice, exposition, and branch-join reviews are recorded.

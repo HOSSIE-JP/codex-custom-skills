@@ -2,7 +2,10 @@
   "formatVersion": 1,
   "style": {
     "id": "gbc-flat-cel-v1",
-    "explicitUserOverride": false
+    "explicitUserOverride": false,
+    "proportionPolicy": "replace-with-fixed-or-explicitly-variable-proportion-policy",
+    "flatFillPolicy": "broad opaque fills, two or three hard value steps, no gradients or airbrush shading",
+    "silhouettePolicy": "distinguish cast and recurring outfits by neckline, sleeves, hem, exposed regions, and footwear"
   },
   "cuts": [
     {
@@ -66,7 +69,10 @@
         "anatomy": "required",
         "identity": "required",
         "nativeGbc": "required",
-        "runtime": "required"
+        "runtime": "required",
+        "proportions": "required",
+        "garmentAccuracy": "required",
+        "silhouetteContrast": "required"
       },
       "reviewRegions": [
         {

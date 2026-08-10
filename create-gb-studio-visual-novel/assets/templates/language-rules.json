@@ -56,5 +56,25 @@
     "characterVoice",
     "exposition",
     "branchJoins"
-  ]
+  ],
+  "repeatedSentenceThreshold": 3,
+  "repeatedSentenceMinChars": 12,
+  "manualReviews": {
+    "readAloud": {
+      "status": "required",
+      "note": ""
+    },
+    "characterVoice": {
+      "status": "required",
+      "note": ""
+    },
+    "exposition": {
+      "status": "required",
+      "note": ""
+    },
+    "branchJoins": {
+      "status": "required",
+      "note": ""
+    }
+  }
 }

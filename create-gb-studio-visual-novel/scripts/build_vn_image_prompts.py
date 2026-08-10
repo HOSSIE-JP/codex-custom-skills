@@ -49,9 +49,14 @@ def character_block(character: dict[str, Any], outfit_id: str) -> tuple[str, lis
     appearance = character.get("appearance") or {}
     lock = "; ".join(f"{key}={value}" for key, value in appearance.items() if key != "prohibitedDrift")
     drift = ", ".join(map(str, appearance.get("prohibitedDrift") or []))
+    outfit_lock = "; ".join(
+        str(value) for value in (
+            outfit.get("description"), outfit.get("silhouette"), outfit.get("garmentConstruction")
+        ) if value
+    )
     text = (
         f"Character {character['id']} ({character.get('displayName', character['id'])}): age {character.get('age')}; "
-        f"adult={character.get('adult')}; identity lock: {lock}; outfit {outfit_id}: {outfit.get('description')}; "
+        f"adult={character.get('adult')}; identity lock: {lock}; outfit {outfit_id}: {outfit_lock}; "
         f"prohibited drift: {drift or 'none declared'}."
     )
     refs = [{"path": path, "role": f"identity reference for {character['id']}"} for path in anchors]
@@ -117,6 +122,9 @@ def main() -> None:
             f"Scene/backdrop: {cut.get('scene', '')}",
             f"Composition/framing: {cut.get('camera', '')}. {purpose_data['layout']}",
             f"Style/medium: {DEFAULT_STYLE}",
+            f"Proportion policy: {style.get('proportionPolicy', 'keep one declared proportion system and reject undeclared age, body-width, or chibi drift')}",
+            f"Flat-fill policy: {style.get('flatFillPolicy', 'broad opaque fills, hard value steps, no smooth gradients or per-tile micro-shading')}",
+            f"Silhouette policy: {style.get('silhouettePolicy', 'keep recurring outfits and cast members distinguishable by neckline, sleeves, hem, exposed regions, and footwear')}",
             "Character identity and wardrobe locks:",
             *[f"- {line}" for line in character_lines],
             f"Props: {', '.join(map(str, cut.get('props') or [])) or 'none'}",

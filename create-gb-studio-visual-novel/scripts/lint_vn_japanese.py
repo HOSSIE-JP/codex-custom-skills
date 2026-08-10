@@ -104,6 +104,26 @@ def main() -> None:
 
     required_variants = set(map(str, rules.get("requiredGenderVariants") or []))
     records = list(iter_records(scenario, issues, required_variants))
+    repeated_threshold = int(rules.get("repeatedSentenceThreshold", 3))
+    repeated_min_chars = int(rules.get("repeatedSentenceMinChars", 12))
+    sentence_occurrences: dict[str, list[TextRecord]] = {}
+    for record in records:
+        if record.kind == "choice":
+            continue
+        for sentence in re.findall(r"[^。！？!?\n]+[。！？!?]?", record.text):
+            normalized = unicodedata.normalize("NFC", sentence).strip()
+            if len(normalized) >= repeated_min_chars:
+                sentence_occurrences.setdefault(normalized, []).append(record)
+    for sentence, occurrences in sentence_occurrences.items():
+        scenes_with_sentence = {record.scene for record in occurrences}
+        if len(scenes_with_sentence) >= repeated_threshold:
+            issue(
+                issues,
+                "warning",
+                occurrences[0].unit,
+                "repeated-boilerplate",
+                f"same sentence appears in {len(scenes_with_sentence)} scenes: {sentence}",
+            )
     allowed_speakers = set(map(str, rules.get("allowedSpeakers") or []))
     characters = {str(item.get("id")): item for item in bible.get("characters", [])}
 
