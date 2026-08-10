@@ -1,6 +1,6 @@
 ---
 name: create-gb-studio-visual-novel
-description: Create original dialogue-heavy visual novels for GB Studio and Game Boy Color, from premise, character bible, branching plot, and Japanese dialogue through stable-ID proofreading packs, consistent ImageGen artwork, anatomy and wardrobe review, seam-resistant GBC conversion, full-width choices, and release evidence. Use for requests to make, plan, script, illustrate, revise, externally proofread, or quality-assure a new Japanese GB Studio visual novel. Use together with imagegen, build-gb-studio-game, and build-gb-studio-visual-novel; use compose-gb-studio-vn-bgm when original music is requested.
+description: Create original dialogue-heavy visual novels for GB Studio and Game Boy Color, from premise, character bible, branching plot, and Japanese dialogue through mandatory stable-ID proofreading packs, consistent ImageGen artwork, anatomy and wardrobe review, seam-resistant GBC conversion, full-width choices, and release evidence. Use for requests to make, plan, script, illustrate, revise, externally proofread, or quality-assure a new Japanese GB Studio visual novel. Use together with imagegen, build-gb-studio-game, and build-gb-studio-visual-novel; use compose-gb-studio-vn-bgm when original music is requested.
 ---
 
 # Create GB Studio Visual Novel
@@ -56,11 +56,13 @@ python scripts/lint_vn_japanese.py ... --strict
 
 Static checks cannot prove naturalness. Complete the read-aloud, voice, exposition, and branch-join reviews recorded in the report.
 
-When dialogue needs external review, export a stable-ID pack from the authoritative JSON:
+After the first complete scenario draft and before image production or generated GB Studio resources, always export the external-review pack from the authoritative JSON:
 
 ```powershell
-python scripts/export_vn_review_pack.py --brief <project-brief.json> --bible <character-bible.json> --scenario <scenario.json> --out <review-dir>
+python scripts/export_vn_review_pack.py --brief <project-brief.json> --bible <character-bible.json> --scenario <scenario.json> --out <project>\source\external-review
 ```
+
+Require `01_concept.md`, `02_character_settings.md`, and `03_scenario_script.md`. The supporting `review-manifest.json` does not replace any of the three Markdown files. Fail the creation gate if a file is missing or its counts or source SHA do not match. Produce the pack even when no external reviewer is currently assigned, and regenerate it whenever the brief, bible, or scenario changes.
 
 Do not mark manual language reviews as passed merely because lint is clean or the authoring agent reread its own output. Preserve source SHA-256 and line IDs, receive corrections as ID-addressed edits, then regenerate resources and rerun route, font, and runtime checks.
 
@@ -102,6 +104,6 @@ Use the exact target GB Studio version for official ROM and Web exports. Test th
 
 ## Delivery contract
 
-Report authoritative sources, unresolved language reviews, image prompts and reference roles, paths and hashes, converted palette/tile metrics, official ROM/Web hashes, tested routes, and external gates.
+Report authoritative sources, the three required external-review Markdown paths and manifest SHA/counts, unresolved language reviews, image prompts and reference roles, paths and hashes, converted palette/tile metrics, official ROM/Web hashes, tested routes, and external gates.
 
 Never claim that Japanese is natural from static lint alone, that anatomy or proportion is sound from counts alone, or that a game is playable from compilation alone.

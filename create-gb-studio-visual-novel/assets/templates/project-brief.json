@@ -59,5 +59,21 @@
   },
   "externalGates": [
     "physical-flash-cart"
-  ]
+  ],
+  "externalReviewPack": {
+    "required": true,
+    "gate": "after-complete-scenario-before-art-and-generated-resources",
+    "outputDir": "source/external-review",
+    "files": [
+      "01_concept.md",
+      "02_character_settings.md",
+      "03_scenario_script.md"
+    ],
+    "manifest": "review-manifest.json",
+    "regenerateWhen": [
+      "project-brief",
+      "character-bible",
+      "scenario"
+    ]
+  }
 }

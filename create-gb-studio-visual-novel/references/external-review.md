@@ -11,7 +11,17 @@
 
 ## Review-pack contract
 
-Keep the authoritative scenario JSON unchanged while preparing review material. Export separate concept, character, and full-script Markdown files plus a machine-readable manifest. Include the source scenario SHA-256 in every file so returned corrections cannot silently target a stale draft.
+Treat the review pack as a required creation artifact, not an optional response to a later proofreading request. Generate it after the first complete scenario draft and before image production or generated GB Studio resources. Regenerate it whenever the project brief, character bible, or scenario changes.
+
+Always write these three Markdown files to `source/external-review`:
+
+1. `01_concept.md`
+2. `02_character_settings.md`
+3. `03_scenario_script.md`
+
+Also write `review-manifest.json` as supporting evidence. The manifest never replaces one of the three required Markdown files. Fail the creation gate when any required file is missing, when counts disagree with the scenario, or when the recorded source SHA-256 is stale.
+
+Keep the authoritative scenario JSON unchanged while preparing review material. Include the source scenario SHA-256 in every file so returned corrections cannot silently target a stale draft.
 
 Do not clean up the dialogue during export. A proofreading pack must reproduce current messages and choices exactly, including awkward wording the reviewer needs to see.
 
@@ -30,10 +40,10 @@ python scripts/export_vn_review_pack.py \
   --brief <project-brief.json> \
   --bible <character-bible.json> \
   --scenario <scenario.json> \
-  --out <review-dir>
+  --out <project>\source\external-review
 ```
 
-The exporter fails duplicate scene IDs, unknown jump targets, empty visible text, or duplicate review IDs. Treat its counts and SHA as evidence that the pack matches the source.
+The exporter fails duplicate scene IDs, unknown jump targets, empty visible text, or duplicate review IDs. Treat its counts and SHA as evidence that the pack matches the source. Do not advance to image production or GB Studio resource generation until this command succeeds and all three Markdown files exist.
 
 ## Reviewer instructions
 
