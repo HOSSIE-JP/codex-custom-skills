@@ -36,7 +36,7 @@ Fail lines that sound like policy text, release notes, or a plot summary. Warnin
 
 Every choice arm must produce an immediate difference in wording, attitude, background, expression, state, or a later callback. Keep branch-specific responses short enough that a join remains believable. At the join, state only facts true for every arm and carry state explicitly.
 
-For accumulated endings, enumerate all choice histories or generate them mechanically. Verify every threshold, boundary value, ending reachability, and reset path. The history count for option pattern `3,2,3,2,3` is 108, not 72.
+For accumulated endings, enumerate all choice histories or generate them mechanically. Verify every threshold, boundary value, ending reachability, and reset path. Calculate the history count as the product of the current project's option cardinalities; for example, `2 x 3 x 2` produces 12 histories. Never copy a total from another title.
 
 ## Character voice
 
@@ -90,7 +90,7 @@ Use the linter's repeated-boilerplate warning as a search aid, not an automatic 
 
 ## Twist protection
 
-Give scenes an explicit reveal phase such as `preReveal`, `reveal`, or `postReveal`. Put forbidden spoiler terms in `language-rules.json`. Search narration, UI, choices, and every configured variant, not only ordinary messages.
+When the current story protects a withheld reveal, give relevant scenes an explicit phase such as `preReveal`, `reveal`, or `postReveal` and put forbidden spoiler terms in `language-rules.json`. Leave the reveal configuration empty when the story has no such device. Search narration, UI, choices, and every configured variant, not only ordinary messages.
 
 Foreshadow with ambiguous observable details. Do not state the hidden explanation before the reveal boundary.
 

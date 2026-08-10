@@ -1,13 +1,19 @@
 ---
 name: create-gb-studio-visual-novel
-description: Create original dialogue-heavy visual novels for GB Studio and Game Boy Color, from premise, character bible, branching plot, and Japanese dialogue through autonomous proofreading, mandatory stable-ID external-review packs and user consultation, consistent ImageGen artwork, anatomy and wardrobe review, seam-resistant GBC conversion, full-width choices, and release evidence. Use for requests to make, plan, script, illustrate, revise, externally proofread, or quality-assure a new Japanese GB Studio visual novel. Use together with imagegen, build-gb-studio-game, and build-gb-studio-visual-novel; use compose-gb-studio-vn-bgm when original music is requested.
+description: Create reusable, title-agnostic Japanese visual novels for GB Studio and Game Boy Color across genres, ratings, cast sizes, route structures, and user-selected art directions, from premise and character bible through autonomous proofreading, mandatory stable-ID external-review packs and user consultation, consistent artwork, branching, GBC conversion, and release evidence. Use for requests to make, plan, script, illustrate, revise, externally proofread, or quality-assure any new Japanese GB Studio visual novel. Use together with imagegen, build-gb-studio-game, and build-gb-studio-visual-novel; use compose-gb-studio-vn-bgm when original music is requested.
 ---
 
 # Create GB Studio Visual Novel
 
 ## Goal
 
-Create an original VN whose story, Japanese voice, branch state, character identity, artwork, GB conversion, and runtime agree. Keep authoring evidence separate from generated GB Studio resources.
+Create an original VN whose project-specific story, Japanese voice, branch state, character identity, artwork, GB conversion, and runtime agree. Keep authoring evidence separate from generated GB Studio resources.
+
+## Scope and generality
+
+This skill is specific to GB Studio production, not to any title, genre, relationship, rating, or cast structure. Derive duration, tone, premise, cast count, names, ages, adult status, relationships, route topology, endings, content boundaries, and visual direction from the current user's brief. Never carry them over from a previous project.
+
+Treat bundled templates as neutral schemas. Replace placeholders and populate empty arrays deliberately; do not interpret them as creative defaults. Do not introduce romance, sexualized clothing, intimate content, comedy deformation, a two-person cast, or branching unless the current project requests it. For any age-sensitive or intimate content, require explicit character ages and adult eligibility before writing or generating it.
 
 ## Load the relevant guidance
 
@@ -78,9 +84,9 @@ Use one source image per cut. Do not use multi-panel storyboard sheets as produc
 python scripts/build_vn_image_prompts.py --bible <character-bible.json> --manifest <visual-manifest.json> --out-dir <prompt-dir>
 ```
 
-For every character in a cut, attach the identity anchor and exact outfit anchor to `imagegen`. Never rely on prompt-only continuity. Lock proportion mode, body silhouette, garment type and rise, exposed regions, opacity, accessories, and contrast from other cast members. Preserve the generated prompt path, reference anchors, selected source path, dimensions, SHA-256, and adoption or rejection reason in the visual manifest.
+For every recurring character depicted in a cut, attach the identity anchor and exact outfit anchor to `imagegen`. Never rely on prompt-only continuity. Lock proportion mode, age category, body silhouette, garment construction, exposed regions, opacity, accessories, and contrast from other cast members. Preserve the generated prompt path, reference anchors, selected source path, dimensions, SHA-256, and adoption or rejection reason in the visual manifest.
 
-Use the default GBC-friendly style unless the user explicitly requests another style: thick dark edges, flat cel fills, two or three value steps per material, limited colors, simple background shapes, and low micro-detail. Prohibit smooth gradients, airbrush shading, bloom, translucent glow, and photorealistic texture.
+Honor the current project's visual direction. When none is supplied, use the GBC-legibility fallback: thick dark edges, flat cel fills, two or three value steps per material, limited colors, simple background shapes, and low micro-detail. Treat this as a technical fallback, not a title or genre identity. Prohibit smooth gradients, airbrush shading, bloom, translucent glow, and photorealistic texture only when using that fallback.
 
 ### 5. Require anatomy and continuity review
 

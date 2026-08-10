@@ -1,4 +1,4 @@
 interface:
   display_name: "Create GB Studio Visual Novel"
-  short_description: "Create and proofread Japanese GBC visual novels"
-  default_prompt: "Use $create-gb-studio-visual-novel to create or revise a Japanese GB Studio visual novel, self-proofread it, generate the required three-file review pack, consult me before external review, keep art consistent, and verify branching."
+  short_description: "Create reusable Japanese GB Studio visual novels"
+  default_prompt: "Use $create-gb-studio-visual-novel to create or revise a title-agnostic Japanese GB Studio visual novel from the current brief, without inheriting genre, cast, rating, branch structure, or art direction from another project."

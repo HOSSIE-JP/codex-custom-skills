@@ -138,12 +138,13 @@ def script_markdown(scenario: dict[str, Any], bible: dict[str, Any], sha: str) -
                     raise ValueError(f"duplicate review ID: {ref}")
                 review_ids.add(ref)
                 lines.extend([f"[{ref}] {names.get(str(item.get('speaker', '')), str(item.get('speaker', '')))}: {text}", ""])
-            elif kind == "genderMessages":
+            elif kind in {"messageVariants", "genderMessages"}:
+                prefix = "G" if kind == "genderMessages" else "V"
                 for variant, messages in (item.get("variants") or {}).items():
                     for index, message in enumerate(messages or [], 1):
                         counts["messages"] += 1
                         counts["variants"] += 1
-                        ref = f"{scene_id}-G{variant}-M{index:02d}"
+                        ref = f"{scene_id}-{prefix}{variant}-M{index:02d}"
                         text = str(message.get("text", ""))
                         if not text or ref in review_ids:
                             raise ValueError(f"invalid review unit: {ref}")

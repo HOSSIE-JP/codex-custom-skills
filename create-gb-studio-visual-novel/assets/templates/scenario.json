@@ -1,14 +1,23 @@
 {
   "formatVersion": 1,
-  "initialScene": "intro",
+  "initialScene": "start",
   "scenes": [
-    {"id": "intro", "revealPhase": "preReveal", "script": [
-      {"type": "message", "speaker": "hero", "text": "今日は、ここから始めよう。"},
-      {"type": "genderMessages", "variants": {"0": [{"speaker": "hero", "text": "僕なら、まず話を聞く。"}], "1": [{"speaker": "hero", "text": "私なら、まず話を聞く。"}], "2": [{"speaker": "hero", "text": "自分なら、まず話を聞く。"}]}},
-      {"type": "choice", "id": "choice_1", "options": [{"text": "率直に尋ねる", "target": "reaction_open", "state": {"trust": 1}}, {"text": "少し様子を見る", "target": "reaction_wait", "state": {"trust": 0}}]}
-    ]},
-    {"id": "reaction_open", "revealPhase": "preReveal", "script": [{"type": "message", "speaker": "partner", "text": "うん。その聞き方なら答えやすい。"}, {"type": "jump", "target": "reveal"}]},
-    {"id": "reaction_wait", "revealPhase": "preReveal", "script": [{"type": "message", "speaker": "partner", "text": "黙っていても、答えは増えないよ。"}, {"type": "jump", "target": "reveal"}]},
-    {"id": "reveal", "revealPhase": "reveal", "script": [{"type": "message", "speaker": "partner", "text": "ここからが、本当の話。"}]}
+    {
+      "id": "start",
+      "revealPhase": "notApplicable",
+      "script": [
+        {
+          "type": "message",
+          "speaker": "",
+          "text": "ここに現在の作品の冒頭本文を記述する。"
+        },
+        {
+          "type": "routeEnding"
+        },
+        {
+          "type": "returnLogo"
+        }
+      ]
+    }
   ]
 }

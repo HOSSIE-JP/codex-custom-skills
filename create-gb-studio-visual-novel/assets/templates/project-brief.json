@@ -1,32 +1,27 @@
 {
   "formatVersion": 1,
   "projectId": "replace-with-project-id",
-  "title": "仮題",
+  "title": "replace-with-title",
   "target": {
     "engine": "GB Studio",
-    "version": "4.3.1",
-    "hardware": "Game Boy Color",
-    "colorMode": "color"
+    "version": "replace-with-exact-version",
+    "hardware": "replace-with-gb-gbc-or-mixed",
+    "colorMode": "replace-with-monochrome-color-or-mixed"
   },
   "experience": {
-    "firstPlayMinutes": 10,
-    "audience": "replace-with-audience",
-    "tone": [
-      "会話劇"
-    ],
+    "firstPlayMinutes": null,
+    "audience": "replace-with-audience-and-rating",
+    "genres": [],
+    "tone": [],
     "contentBoundaries": []
   },
   "branching": {
-    "choiceCount": 1,
+    "choiceCount": 0,
     "endingCount": 1,
-    "joinPolicy": "各選択直後に専用反応を再生してから共通ノードへ合流する",
-    "optionPattern": [
-      2
-    ],
-    "historyCount": 2,
-    "stateVariables": [
-      "trust"
-    ],
+    "joinPolicy": "replace-with-project-join-policy-or-not-applicable",
+    "optionPattern": [],
+    "historyCount": 1,
+    "stateVariables": [],
     "choiceLayout": "dialogue-width",
     "menuInputReleaseFrames": 6
   },
@@ -44,8 +39,9 @@
       160,
       144
     ],
+    "visualDirection": "replace-with-current-project-art-direction",
     "proportionPolicy": "replace-with-fixed-or-explicitly-variable-policy",
-    "outfitSilhouettePolicy": "recurring cast must remain distinguishable at 160 pixels"
+    "outfitSilhouettePolicy": "replace-with-project-policy"
   },
   "gbConstraints": {
     "maxColorsPer8x8Tile": 4,
@@ -57,9 +53,7 @@
     "dithering": false,
     "neighborCoherentPaletteAssignment": true
   },
-  "externalGates": [
-    "physical-flash-cart"
-  ],
+  "externalGates": [],
   "externalReviewPack": {
     "required": true,
     "gate": "after-complete-scenario-before-art-and-generated-resources",

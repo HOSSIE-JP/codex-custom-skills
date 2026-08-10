@@ -60,18 +60,19 @@ def iter_records(scenario: dict[str, Any], issues: list[dict[str, str]], require
             base = f"{scene_id}:{command_index}"
             if command_type == "message":
                 yield TextRecord(base, scene_id, phase, str(command.get("speaker", "")), str(command.get("text", "")), "message")
-            elif command_type == "genderMessages":
+            elif command_type in {"messageVariants", "genderMessages"}:
                 variants = command.get("variants") or {}
                 variant_keys = set(map(str, variants))
                 if variant_keys != required_variants:
-                    issue(issues, "error", base, "gender-coverage", f"expected {sorted(required_variants)}, found {sorted(variant_keys)}")
+                    issue(issues, "error", base, "variant-coverage", f"expected {sorted(required_variants)}, found {sorted(variant_keys)}")
                 for variant, messages in variants.items():
                     if not messages:
-                        issue(issues, "error", f"{base}:variant:{variant}", "gender-empty", "variant must contain at least one message")
+                        issue(issues, "error", f"{base}:variant:{variant}", "variant-empty", "variant must contain at least one message")
                     for message_index, message in enumerate(messages or []):
                         yield TextRecord(
                             f"{base}:variant:{variant}:{message_index}", scene_id, phase,
-                            str(message.get("speaker", "")), str(message.get("text", "")), "genderVariant",
+                            str(message.get("speaker", "")), str(message.get("text", "")),
+                            "genderVariant" if command_type == "genderMessages" else "messageVariant",
                         )
             elif command_type == "choice":
                 options = command.get("options") or []
@@ -114,7 +115,11 @@ def main() -> None:
         if reveal_scene.get("revealPhase") != "reveal":
             issue(issues, "error", reveal_scene_id, "reveal-phase", "revealSceneId must use revealPhase=reveal")
 
-    required_variants = set(map(str, rules.get("requiredGenderVariants") or []))
+    variant_config = rules.get("requiredMessageVariants")
+    if variant_config is None:
+        # Backward compatibility for authoring packs created before generic message variants.
+        variant_config = rules.get("requiredGenderVariants") or []
+    required_variants = set(map(str, variant_config))
     records = list(iter_records(scenario, issues, required_variants))
     repeated_threshold = int(rules.get("repeatedSentenceThreshold", 3))
     repeated_min_chars = int(rules.get("repeatedSentenceMinChars", 12))

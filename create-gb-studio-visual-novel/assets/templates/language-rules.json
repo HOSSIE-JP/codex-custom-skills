@@ -1,21 +1,10 @@
 {
   "formatVersion": 1,
   "allowedSpeakers": [
-    "",
-    "hero",
-    "partner"
+    ""
   ],
-  "requiredGenderVariants": [
-    "0",
-    "1",
-    "2"
-  ],
-  "revealSceneId": "reveal",
-  "preRevealSpoilerTerms": [
-    "演技だった",
-    "最初から知っていた",
-    "真相は"
-  ],
+  "revealSceneId": "",
+  "preRevealSpoilerTerms": [],
   "awkwardPhrases": [
     {
       "phrase": "問題ありません",
@@ -100,5 +89,6 @@
       "status": "required",
       "note": ""
     }
-  }
+  },
+  "requiredMessageVariants": []
 }

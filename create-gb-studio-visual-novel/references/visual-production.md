@@ -21,11 +21,11 @@ One cut must have one production master. Do not extract final cuts from a genera
 
 ## Default style
 
-Use this style block unless the user explicitly overrides it:
+Use this style block only as a GBC-legibility fallback when the current project does not define another direction:
 
 > GBC-friendly flat cel illustration with thick consistent dark outlines, broad solid color regions, two or three discrete value steps per material, limited palette, simplified readable background shapes, separated silhouettes, and low-frequency detail that survives reduction to 160 pixels wide.
 
-Avoid smooth gradients, airbrush shading, bloom, translucent glow, lens effects, photorealistic microtexture, tiny highlights, distant clutter, and low-contrast edges.
+This fallback is not a title or genre identity. A user-defined style may replace it, but must still be tested at native 160x144 resolution. When using the fallback, avoid smooth gradients, airbrush shading, bloom, translucent glow, lens effects, photorealistic microtexture, tiny highlights, distant clutter, and low-contrast edges.
 
 ## Proportion and silhouette locks
 
@@ -39,7 +39,7 @@ Make recurring characters readable by silhouette at 160 pixels. Lock hair mass, 
 
 Create one anchor per wardrobe ID and describe real garment construction rather than a vague modesty category. Record neckline, straps or sleeves, opacity, support structure where relevant, waist rise relative to navel and hip bones, leg opening, hem, fastening, footwear, and exposed regions.
 
-For adult swimwear, underwear, bath, or changing scenes, preserve adult anatomy, agency, and the requested commercial garment style. Do not automatically replace an ordinary low- or mid-rise garment with an implausible high-waisted, sports, or high-neck substitute. Also do not invent transparency, displaced fabric, nipples, genitals, or direct sexual acts. Treat garment accuracy and content boundaries as separate requirements.
+Never infer intimate wardrobe or sexualized presentation from genre, gender, or a previous project. When the current brief explicitly includes age-sensitive or intimate wardrobe, first verify and record exact ages, adult eligibility, agency, and content boundaries. Then preserve the requested real garment construction without substituting a different garment category or inventing additional exposure. Treat garment accuracy, age eligibility, and content boundaries as separate requirements.
 
 ## Image purposes and sizes
 

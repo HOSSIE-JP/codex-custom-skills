@@ -13,7 +13,7 @@
 
 ## Review-pack contract
 
-Treat the review pack as a required creation artifact, not an optional response to a later proofreading request. Generate it after the first complete scenario draft and before image production or generated GB Studio resources. Regenerate it whenever the project brief, character bible, or scenario changes.
+Treat the review pack as a required creation artifact, not an optional response to a later proofreading request. Generate it after the first complete scenario draft and before image production or generated GB Studio resources. Regenerate it whenever the project brief, character bible, scenario, language rules, or review decision changes.
 
 Always write these three Markdown files to `source/external-review`:
 
