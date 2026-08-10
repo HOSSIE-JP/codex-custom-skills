@@ -38,6 +38,43 @@ def validate_graph(scenario: dict[str, Any]) -> set[str]:
     return known
 
 
+def review_workflow(brief: dict[str, Any], rules: dict[str, Any] | None) -> dict[str, Any]:
+    pack = brief.get("externalReviewPack") if isinstance(brief.get("externalReviewPack"), dict) else {}
+    self_review = pack.get("selfReview") if isinstance(pack.get("selfReview"), dict) else {}
+    consultation = pack.get("userConsultation") if isinstance(pack.get("userConsultation"), dict) else {}
+    self_status = str(self_review.get("status", "unspecified"))
+    self_required = bool(pack.get("required") and self_review.get("required"))
+    pass_names = list(map(str, self_review.get("passes") or []))
+    if self_required and self_status != "complete":
+        raise ValueError("autonomous self-review must be complete before exporting the external-review pack")
+    if self_required and rules is None:
+        raise ValueError("--rules is required to verify autonomous self-review evidence")
+
+    configured = rules.get("selfReviews") if isinstance(rules, dict) and isinstance(rules.get("selfReviews"), dict) else {}
+    pass_states: dict[str, dict[str, str]] = {}
+    incomplete: list[str] = []
+    for name in pass_names:
+        value = configured.get(name) if isinstance(configured.get(name), dict) else {}
+        status = str(value.get("status", "required"))
+        note = str(value.get("note", ""))
+        pass_states[name] = {"status": status, "note": note}
+        if self_required and (status != "pass" or not note.strip()):
+            incomplete.append(name)
+    if incomplete:
+        raise ValueError(f"self-review passes need pass status and evidence notes: {', '.join(incomplete)}")
+
+    allowed = set(map(str, consultation.get("allowedStatuses") or []))
+    consultation_status = str(consultation.get("status", "unspecified"))
+    if allowed and consultation_status not in allowed:
+        raise ValueError(f"invalid external-review consultation status: {consultation_status}")
+    return {
+        "selfReviewStatus": self_status,
+        "selfReviewPasses": pass_states,
+        "userConsultationStatus": consultation_status,
+        "externalTransmissionApproved": bool(consultation.get("externalTransmissionApproved", False)),
+    }
+
+
 def concept_markdown(brief: dict[str, Any], sha: str) -> list[str]:
     return [
         "# Work concept source",
@@ -144,10 +181,15 @@ def main() -> None:
     parser.add_argument("--brief", type=Path, required=True)
     parser.add_argument("--bible", type=Path, required=True)
     parser.add_argument("--scenario", type=Path, required=True)
+    parser.add_argument("--rules", type=Path)
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
 
     brief, bible, scenario = load(args.brief), load(args.bible), load(args.scenario)
+    rules = load(args.rules) if args.rules else None
+    workflow = review_workflow(brief, rules)
+    if args.rules:
+        workflow["languageRulesSha256"] = hashlib.sha256(args.rules.read_bytes()).hexdigest()
     validate_graph(scenario)
     source = args.scenario.read_bytes()
     sha = hashlib.sha256(source).hexdigest()
@@ -156,9 +198,9 @@ def main() -> None:
     dump(args.out / "02_character_settings.md", characters_markdown(bible, sha))
     script, counts = script_markdown(scenario, bible, sha)
     dump(args.out / "03_scenario_script.md", script)
-    manifest = {"formatVersion": 1, "scenarioSha256": sha, "counts": counts, "files": ["01_concept.md", "02_character_settings.md", "03_scenario_script.md"]}
+    manifest = {"formatVersion": 1, "scenarioSha256": sha, "counts": counts, "workflow": workflow, "files": ["01_concept.md", "02_character_settings.md", "03_scenario_script.md"]}
     (args.out / "review-manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps({"status": "pass", "scenarioSha256": sha, **counts}, ensure_ascii=False))
+    print(json.dumps({"status": "pass", "scenarioSha256": sha, **workflow, **counts}, ensure_ascii=False))
 
 
 if __name__ == "__main__":

@@ -7,6 +7,7 @@
 - Branches and joins
 - Character voice
 - Natural Japanese review
+- Self-review and independent review
 - Repetition and AI-like prose
 - Twist protection
 - Release checklist
@@ -63,7 +64,14 @@ Read only one character's lines in order. Confirm pronouns, vocabulary, rhythm, 
 
 Read scene transitions and every choice arm. Confirm the player has enough context before a decision, branch reactions differ, and joined dialogue does not assume one arm.
 
-Automated lint must leave these passes as `required`. Do not turn them to `pass` because the same authoring agent reread its own text. Use an independent human or external-model review and retain the notes.
+## Self-review and independent review
+
+Record the four passes twice because they serve different purposes.
+
+- `selfReviews` are author-owned. The authoring agent must perform them before exporting the review pack, revise the authoritative source, add concrete notes, and set each pass to `pass`. The linter reports the recorded state but never promotes it automatically.
+- `manualReviews` are independent. Keep them `required` until a human or external model has reviewed the exported, SHA-matched pack and returned notes. The authoring agent's own reread cannot satisfy this gate.
+
+After self-review, export the three-file pack, show the self-review summary and all file paths to the user, and ask whether to wait for independent review or proceed provisionally. Record the decision in `externalReviewPack.userConsultation.status`. Do not transmit files to an external service without explicit user authorization.
 
 ## Repetition and AI-like prose
 
@@ -95,4 +103,6 @@ Foreshadow with ambiguous observable details. Do not state the hidden explanatio
 - No branch loses state at a join.
 - Exact sentence reuse across scenes is intentional or revised.
 - Static warnings are resolved or documented.
+- All four autonomous self-review passes contain evidence and are complete before review-pack export.
+- The review pack and self-review summary were presented to the user, and the user's external-review decision was recorded.
 - Independent read-aloud, voice, exposition, and branch-join reviews are recorded.

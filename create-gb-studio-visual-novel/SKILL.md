@@ -1,6 +1,6 @@
 ---
 name: create-gb-studio-visual-novel
-description: Create original dialogue-heavy visual novels for GB Studio and Game Boy Color, from premise, character bible, branching plot, and Japanese dialogue through mandatory stable-ID proofreading packs, consistent ImageGen artwork, anatomy and wardrobe review, seam-resistant GBC conversion, full-width choices, and release evidence. Use for requests to make, plan, script, illustrate, revise, externally proofread, or quality-assure a new Japanese GB Studio visual novel. Use together with imagegen, build-gb-studio-game, and build-gb-studio-visual-novel; use compose-gb-studio-vn-bgm when original music is requested.
+description: Create original dialogue-heavy visual novels for GB Studio and Game Boy Color, from premise, character bible, branching plot, and Japanese dialogue through autonomous proofreading, mandatory stable-ID external-review packs and user consultation, consistent ImageGen artwork, anatomy and wardrobe review, seam-resistant GBC conversion, full-width choices, and release evidence. Use for requests to make, plan, script, illustrate, revise, externally proofread, or quality-assure a new Japanese GB Studio visual novel. Use together with imagegen, build-gb-studio-game, and build-gb-studio-visual-novel; use compose-gb-studio-vn-bgm when original music is requested.
 ---
 
 # Create GB Studio Visual Novel
@@ -54,17 +54,21 @@ python scripts/lint_vn_japanese.py --scenario <scenario.json> --bible <character
 python scripts/lint_vn_japanese.py ... --strict
 ```
 
-Static checks cannot prove naturalness. Complete the read-aloud, voice, exposition, and branch-join reviews recorded in the report.
+Static checks cannot prove naturalness. Before preparing material for another reviewer, autonomously complete four separate self-review passes: mechanical/lint, read-aloud, character voice, and exposition/branch joins. Revise the authoritative JSON after each pass, rerun the linter, and record concrete notes. Set `externalReviewPack.selfReview.status` to `complete` only after all four passes are complete; do not merely reread without editing or evidence.
 
-After the first complete scenario draft and before image production or generated GB Studio resources, always export the external-review pack from the authoritative JSON:
+After the first complete scenario draft has passed autonomous self-review, and before image production or generated GB Studio resources, always export the external-review pack from the revised authoritative JSON:
 
 ```powershell
-python scripts/export_vn_review_pack.py --brief <project-brief.json> --bible <character-bible.json> --scenario <scenario.json> --out <project>\source\external-review
+python scripts/export_vn_review_pack.py --brief <project-brief.json> --bible <character-bible.json> --scenario <scenario.json> --rules <language-rules.json> --out <project>\source\external-review
 ```
 
-Require `01_concept.md`, `02_character_settings.md`, and `03_scenario_script.md`. The supporting `review-manifest.json` does not replace any of the three Markdown files. Fail the creation gate if a file is missing or its counts or source SHA do not match. Produce the pack even when no external reviewer is currently assigned, and regenerate it whenever the brief, bible, or scenario changes.
+Require `01_concept.md`, `02_character_settings.md`, and `03_scenario_script.md`. The supporting `review-manifest.json` does not replace any of the three Markdown files. Fail the creation gate if autonomous self-review is incomplete, a file is missing, or its counts, source SHA, or recorded workflow state do not match. Produce the pack even when no external reviewer is currently assigned, and regenerate it whenever the brief, bible, scenario, language rules, or review decision changes.
 
-Do not mark manual language reviews as passed merely because lint is clean or the authoring agent reread its own output. Preserve source SHA-256 and line IDs, receive corrections as ID-addressed edits, then regenerate resources and rerun route, font, and runtime checks.
+After export, present the user with the self-review summary, important revisions, unresolved concerns, clickable paths to all three Markdown files, and the manifest SHA/counts. Then explicitly ask whether to wait for independent external proofreading or proceed provisionally and reapply returned corrections later. Record the answer as `awaiting-external-review`, `proceeding-provisionally`, `waived-by-user`, or `complete`; use `pending-user-decision` until the user answers. If the user chooses to wait, pause art and generated-resource production. If the user proceeds provisionally, mark all downstream text-derived resources for regeneration after corrections.
+
+Never upload or send the review pack to an external AI, reviewer, or service without explicit user authorization. User consultation is mandatory even when the user will perform the external review themselves.
+
+Do not mark independent language reviews as passed merely because lint is clean or the authoring agent completed self-review. Preserve source SHA-256 and line IDs, receive corrections as ID-addressed edits, then regenerate resources and rerun route, font, and runtime checks.
 
 ### 4. Build visual jobs from locked data
 
@@ -104,6 +108,6 @@ Use the exact target GB Studio version for official ROM and Web exports. Test th
 
 ## Delivery contract
 
-Report authoritative sources, the three required external-review Markdown paths and manifest SHA/counts, unresolved language reviews, image prompts and reference roles, paths and hashes, converted palette/tile metrics, official ROM/Web hashes, tested routes, and external gates.
+Report authoritative sources, autonomous self-review evidence, the three required external-review Markdown paths and manifest SHA/counts, the recorded user consultation decision, unresolved independent language reviews, image prompts and reference roles, paths and hashes, converted palette/tile metrics, official ROM/Web hashes, tested routes, and external gates.
 
 Never claim that Japanese is natural from static lint alone, that anatomy or proportion is sound from counts alone, or that a game is playable from compilation alone.

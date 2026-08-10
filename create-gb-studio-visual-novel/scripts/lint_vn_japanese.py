@@ -39,6 +39,18 @@ def issue(issues: list[dict[str, str]], severity: str, unit: str, rule: str, det
     issues.append({"severity": severity, "unit": unit, "rule": rule, "detail": detail})
 
 
+def review_states(names: list[str], configured: Any) -> dict[str, dict[str, str]]:
+    values = configured if isinstance(configured, dict) else {}
+    states: dict[str, dict[str, str]] = {}
+    for name in names:
+        value = values.get(name) if isinstance(values.get(name), dict) else {}
+        states[name] = {
+            "status": str(value.get("status", "required")),
+            "note": str(value.get("note", "")),
+        }
+    return states
+
+
 def iter_records(scenario: dict[str, Any], issues: list[dict[str, str]], required_variants: set[str]) -> Iterable[TextRecord]:
     for scene_index, scene in enumerate(scenario.get("scenes", [])):
         scene_id = str(scene.get("id", f"scene:{scene_index}"))
@@ -201,13 +213,15 @@ def main() -> None:
     errors = [item for item in issues if item["severity"] == "error"]
     warnings = [item for item in issues if item["severity"] == "warning"]
     blocking = bool(errors or (args.strict and warnings))
+    self_names = list(map(str, rules.get("selfReviewNames") or ["mechanical", "readAloud", "characterVoice", "expositionAndBranchJoins"]))
     manual_names = list(map(str, rules.get("manualReviewNames") or ["readAloud", "characterVoice", "exposition", "branchJoins"]))
     report = {
         "status": "fail" if blocking else "pass",
         "strict": args.strict,
         "automatedNaturalnessClaim": False,
         "statistics": {"scenes": len(scenes), "textUnits": len(records), "errors": len(errors), "warnings": len(warnings)},
-        "manualReview": {name: {"status": "required", "note": ""} for name in manual_names},
+        "selfReview": review_states(self_names, rules.get("selfReviews")),
+        "manualReview": review_states(manual_names, rules.get("manualReviews")),
         "issues": issues,
     }
     write_json(args.report, report)

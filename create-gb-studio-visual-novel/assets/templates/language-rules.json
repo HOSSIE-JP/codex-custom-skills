@@ -51,6 +51,30 @@
       "detail": "同じ文で主語を立て直さず、省略または文分けを検討する"
     }
   ],
+  "selfReviewNames": [
+    "mechanical",
+    "readAloud",
+    "characterVoice",
+    "expositionAndBranchJoins"
+  ],
+  "selfReviews": {
+    "mechanical": {
+      "status": "required",
+      "note": ""
+    },
+    "readAloud": {
+      "status": "required",
+      "note": ""
+    },
+    "characterVoice": {
+      "status": "required",
+      "note": ""
+    },
+    "expositionAndBranchJoins": {
+      "status": "required",
+      "note": ""
+    }
+  },
   "manualReviewNames": [
     "readAloud",
     "characterVoice",

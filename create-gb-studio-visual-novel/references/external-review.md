@@ -3,8 +3,10 @@
 ## Contents
 
 - Review-pack contract
+- Self-review prerequisite
 - Stable IDs
 - Export
+- User consultation gate
 - Reviewer instructions
 - Applying corrections
 - Required revalidation
@@ -25,6 +27,12 @@ Keep the authoritative scenario JSON unchanged while preparing review material. 
 
 Do not clean up the dialogue during export. A proofreading pack must reproduce current messages and choices exactly, including awkward wording the reviewer needs to see.
 
+## Self-review prerequisite
+
+Before export, the authoring agent must run mechanical/lint, read-aloud, character-voice, and exposition/branch-join passes against the complete scenario. Apply accepted corrections to the authoritative JSON, rerun lint, and record specific notes in `selfReviews`. Mark `externalReviewPack.selfReview.status` as `complete` only after every pass is complete. The exporter must reject a new-format brief unless the aggregate status is `complete` and every configured `selfReviews` pass is `pass` with a non-empty evidence note.
+
+Self-review improves the draft that is handed off; it does not count as independent external review. Keep `manualReviews` required until a separate reviewer returns results.
+
 ## Stable IDs
 
 Give each message an ID derived from the stable scene ID and message order, such as `c12-M03`. Give choices and options their authored IDs, such as `choice_2-O1`. IDs are addresses, not display text; do not renumber scenes to make prose prettier.
@@ -40,10 +48,26 @@ python scripts/export_vn_review_pack.py \
   --brief <project-brief.json> \
   --bible <character-bible.json> \
   --scenario <scenario.json> \
+  --rules <language-rules.json> \
   --out <project>\source\external-review
 ```
 
 The exporter fails duplicate scene IDs, unknown jump targets, empty visible text, or duplicate review IDs. Treat its counts and SHA as evidence that the pack matches the source. Do not advance to image production or GB Studio resource generation until this command succeeds and all three Markdown files exist.
+
+## User consultation gate
+
+Immediately after export, present the user with:
+
+1. the autonomous self-review summary and material changes;
+2. unresolved wording or structural concerns;
+3. clickable paths to all three Markdown files;
+4. the manifest scenario SHA-256 and counts.
+
+Then ask: `外部校正結果を待ってから画像・実装へ進みますか。それとも現版で暫定的に進め、返却後に再生成しますか？`
+
+Record the answer in `externalReviewPack.userConsultation.status` as `awaiting-external-review`, `proceeding-provisionally`, `waived-by-user`, or `complete`. Leave it `pending-user-decision` before the answer. Regenerate the pack after changing the project brief so the manifest records the current workflow state.
+
+If the answer is `awaiting-external-review`, pause image and generated-resource production. If it is `proceeding-provisionally`, record that fonts, scenes, ROM, Web output, and affected images or layouts must be regenerated after accepted corrections. Never upload or transmit the pack to an external AI or service unless the user explicitly authorizes that action; preparing and linking local files is not authorization to send them.
 
 ## Reviewer instructions
 

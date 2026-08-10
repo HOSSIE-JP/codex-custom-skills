@@ -70,10 +70,36 @@
       "03_scenario_script.md"
     ],
     "manifest": "review-manifest.json",
+    "selfReview": {
+      "required": true,
+      "passes": [
+        "mechanical",
+        "readAloud",
+        "characterVoice",
+        "expositionAndBranchJoins"
+      ],
+      "status": "required"
+    },
+    "userConsultation": {
+      "required": true,
+      "status": "pending-user-decision",
+      "allowedStatuses": [
+        "pending-user-decision",
+        "awaiting-external-review",
+        "proceeding-provisionally",
+        "waived-by-user",
+        "complete"
+      ],
+      "externalTransmissionRequiresExplicitApproval": true,
+      "externalTransmissionApproved": false,
+      "note": ""
+    },
     "regenerateWhen": [
       "project-brief",
       "character-bible",
-      "scenario"
+      "scenario",
+      "language-rules",
+      "review-decision"
     ]
   }
 }
