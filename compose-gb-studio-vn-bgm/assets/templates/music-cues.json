@@ -1,0 +1,18 @@
+{
+  "formatVersion": 1,
+  "cues": [
+    {
+      "id": "conversation_warm",
+      "scenes": ["scene_example"],
+      "narrativeFunction": "gentle conversation with a small unresolved question",
+      "mood": ["warm", "curious", "light"],
+      "bpmRange": [104, 124],
+      "energy": 0.4,
+      "loopRequired": true,
+      "carryAcrossScenes": true,
+      "entry": "start on scene entry",
+      "exit": "fade or replace when the interpretation changes",
+      "silenceAllowed": false
+    }
+  ]
+}

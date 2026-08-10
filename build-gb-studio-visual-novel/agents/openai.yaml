@@ -1,0 +1,4 @@
+interface:
+  display_name: "GB Studio Visual Novel Builder"
+  short_description: "Build and port dialogue-heavy GB Studio visual novels"
+  default_prompt: "Use $build-gb-studio-visual-novel to build or port this visual novel and validate its Japanese text, branching, portraits, and GB Studio exports."

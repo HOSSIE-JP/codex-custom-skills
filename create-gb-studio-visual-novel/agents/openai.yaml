@@ -1,0 +1,4 @@
+interface:
+  display_name: "Create GB Studio Visual Novel"
+  short_description: "Create natural Japanese GBC visual novels"
+  default_prompt: "Use $create-gb-studio-visual-novel to design an original GB Studio visual novel with natural Japanese and consistent GBC-friendly art."

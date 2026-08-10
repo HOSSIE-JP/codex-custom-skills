@@ -1,0 +1,28 @@
+{
+  "formatVersion": 1,
+  "id": "conversation_warm",
+  "title": "Warm Question",
+  "bpm": 116,
+  "loopRequired": true,
+  "patterns": [
+    {
+      "melody": ["C4", "E4", "G4", "E4", "D4", "F4", "A4", "F4", "E4", "G4", "B4", "G4", "F4", "A4", "G4", null],
+      "harmony": ["C3", "F3", "A3", "G3"],
+      "bass": ["C2", "F2", "A2", "G2"],
+      "drums": ["kick", "hat", "hat", "hat", "kick", "hat", "hat", "hat", "kick", "hat", "hat", "hat", "kick", "hat", "hat", "hat"]
+    },
+    {
+      "melody": ["A4", "G4", "E4", "D4", "F4", "E4", "C4", null, "D4", "F4", "A4", "G4", "E4", "D4", "C4", null],
+      "harmony": ["F3", "G3", "E3", "A3"],
+      "bass": ["F2", "G2", "E2", "A2"],
+      "drums": ["kick", "hat", "hat", "hat", "kick", "hat", "hat", "hat", "kick", "hat", "hat", "hat", "kick", "hat", "hat", "hat"]
+    }
+  ],
+  "gbStudioResource": {
+    "id": "replace-with-project-stable-id",
+    "name": "conversation_warm",
+    "symbol": "song_conversation_warm",
+    "filename": "music/conversation_warm.mod",
+    "type": "mod"
+  }
+}

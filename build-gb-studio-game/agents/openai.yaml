@@ -1,0 +1,4 @@
+interface:
+  display_name: "GB Studio Game Builder"
+  short_description: "Build, repair, export, and QA GB Studio games"
+  default_prompt: "Use $build-gb-studio-game to build or repair this GB Studio project and verify its ROM and gameplay."

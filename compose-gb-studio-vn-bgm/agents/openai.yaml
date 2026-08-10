@@ -1,0 +1,4 @@
+interface:
+  display_name: "Compose GB Studio VN BGM"
+  short_description: "Compose validated 4-channel GB Studio VN BGM"
+  default_prompt: "Use $compose-gb-studio-vn-bgm to compose and validate original looping MOD music for a GB Studio visual novel."

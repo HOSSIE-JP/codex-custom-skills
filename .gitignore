@@ -1,0 +1,44 @@
+# This repository lives inside the Codex skills directory. Ignore every
+# top-level entry unless it is explicitly allowlisted below.
+/*
+
+!/.gitignore
+!/.gitattributes
+!/README.md
+
+!/build-gb-studio-game/
+!/build-gb-studio-game/**
+!/build-gb-studio-visual-novel/
+!/build-gb-studio-visual-novel/**
+!/compose-gb-studio-vn-bgm/
+!/compose-gb-studio-vn-bgm/**
+!/create-gb-studio-visual-novel/
+!/create-gb-studio-visual-novel/**
+!/geargrafx-debugging/
+!/geargrafx-debugging/**
+!/xna-to-godot-migration/
+!/xna-to-godot-migration/**
+
+# Generated caches and local development state.
+**/__pycache__/
+**/*.py[cod]
+**/.pytest_cache/
+**/.mypy_cache/
+**/.ruff_cache/
+**/.venv/
+**/venv/
+**/node_modules/
+**/.DS_Store
+**/Thumbs.db
+**/*.log
+**/*.tmp
+**/*.bak
+
+# Local secrets and credentials must never be committed.
+**/.env
+**/.env.*
+!**/.env.example
+**/*.pem
+**/*.key
+**/*.pfx
+**/*.p12
