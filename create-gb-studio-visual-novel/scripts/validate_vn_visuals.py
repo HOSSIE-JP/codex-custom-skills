@@ -18,7 +18,7 @@ PURPOSE_SIZES = {
     "identityAnchor": (1024, 1024),
     "outfitAnchor": (1024, 1536),
 }
-QA_NAMES = ("fullResolution", "anatomy", "identity", "nativeGbc", "runtime")
+QA_NAMES = ("fullResolution", "anatomy", "identity", "proportions", "garmentAccuracy", "silhouetteContrast", "nativeGbc", "runtime")
 
 
 def load_json(path: Path) -> dict[str, Any]:

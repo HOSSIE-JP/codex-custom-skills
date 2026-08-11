@@ -1,21 +1,10 @@
 {
   "formatVersion": 1,
   "allowedSpeakers": [
-    "",
-    "hero",
-    "partner"
+    ""
   ],
-  "requiredGenderVariants": [
-    "0",
-    "1",
-    "2"
-  ],
-  "revealSceneId": "reveal",
-  "preRevealSpoilerTerms": [
-    "演技だった",
-    "最初から知っていた",
-    "真相は"
-  ],
+  "revealSceneId": "",
+  "preRevealSpoilerTerms": [],
   "awkwardPhrases": [
     {
       "phrase": "問題ありません",
@@ -51,10 +40,55 @@
       "detail": "同じ文で主語を立て直さず、省略または文分けを検討する"
     }
   ],
+  "selfReviewNames": [
+    "mechanical",
+    "readAloud",
+    "characterVoice",
+    "expositionAndBranchJoins"
+  ],
+  "selfReviews": {
+    "mechanical": {
+      "status": "required",
+      "note": ""
+    },
+    "readAloud": {
+      "status": "required",
+      "note": ""
+    },
+    "characterVoice": {
+      "status": "required",
+      "note": ""
+    },
+    "expositionAndBranchJoins": {
+      "status": "required",
+      "note": ""
+    }
+  },
   "manualReviewNames": [
     "readAloud",
     "characterVoice",
     "exposition",
     "branchJoins"
-  ]
+  ],
+  "repeatedSentenceThreshold": 3,
+  "repeatedSentenceMinChars": 12,
+  "manualReviews": {
+    "readAloud": {
+      "status": "required",
+      "note": ""
+    },
+    "characterVoice": {
+      "status": "required",
+      "note": ""
+    },
+    "exposition": {
+      "status": "required",
+      "note": ""
+    },
+    "branchJoins": {
+      "status": "required",
+      "note": ""
+    }
+  },
+  "requiredMessageVariants": []
 }

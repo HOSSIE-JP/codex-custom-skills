@@ -2,96 +2,11 @@
   "formatVersion": 1,
   "style": {
     "id": "gbc-flat-cel-v1",
-    "explicitUserOverride": false
+    "explicitUserOverride": false,
+    "projectVisualDirection": "replace-with-current-project-art-direction-or-use-gbc-fallback",
+    "proportionPolicy": "replace-with-fixed-or-explicitly-variable-proportion-policy",
+    "flatFillPolicy": "broad opaque fills, two or three hard value steps, no gradients or airbrush shading",
+    "silhouettePolicy": "replace-with-current-project-character-and-outfit-policy"
   },
-  "cuts": [
-    {
-      "id": "cafe_example",
-      "purpose": "messageSafeWide",
-      "scene": "quiet cafe interior",
-      "camera": "high three-quarter view across a table",
-      "action": "the partner listens while the protagonist rests one hand near a closed notebook",
-      "characters": [
-        {
-          "id": "hero",
-          "outfitId": "default"
-        },
-        {
-          "id": "partner",
-          "outfitId": "default"
-        }
-      ],
-      "props": [
-        "closed notebook",
-        "two cups"
-      ],
-      "anatomy": {
-        "visiblePeople": 2,
-        "visibleHands": [
-          {
-            "owner": "hero",
-            "count": 1,
-            "roles": [
-              "resting beside the notebook"
-            ]
-          },
-          {
-            "owner": "partner",
-            "count": 1,
-            "roles": [
-              "supporting the cheek"
-            ]
-          }
-        ],
-        "hiddenLimbs": [
-          "partner's other hand rests in the lap below the table"
-        ],
-        "forbiddenRegions": [
-          {
-            "xPercent": 50.0,
-            "yPercent": 45.0,
-            "object": "extra hand"
-          }
-        ]
-      },
-      "sourcePath": "assets/source_art/cafe_example.png",
-      "convertedPath": "assets/backgrounds/cafe_example.png",
-      "runtimeCapturePath": "build/qa/cafe_example.png",
-      "sourceContainsMessageWindow": false,
-      "messageWindowBandIncluded": false,
-      "accepted": false,
-      "sha256": "",
-      "qa": {
-        "fullResolution": "required",
-        "anatomy": "required",
-        "identity": "required",
-        "nativeGbc": "required",
-        "runtime": "required"
-      },
-      "reviewRegions": [
-        {
-          "label": "partner face",
-          "xPercent": 68.0,
-          "yPercent": 28.0,
-          "widthPercent": 22.0,
-          "heightPercent": 28.0
-        },
-        {
-          "label": "hands",
-          "xPercent": 50.0,
-          "yPercent": 45.0,
-          "widthPercent": 30.0,
-          "heightPercent": 30.0
-        }
-      ],
-      "promptPath": "source/vn-prompts/cafe_example.prompt.md",
-      "referenceAnchors": [
-        "assets/source_art/anchors/hero-face.png",
-        "assets/source_art/anchors/hero-default.png",
-        "assets/source_art/anchors/partner-face.png",
-        "assets/source_art/anchors/partner-default.png"
-      ],
-      "adoptionReason": ""
-    }
-  ]
+  "cuts": []
 }

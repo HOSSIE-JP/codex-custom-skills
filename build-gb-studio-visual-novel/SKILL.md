@@ -37,7 +37,7 @@ Fail on unknown commands, duplicate IDs, unresolved references, unreachable requ
 
 Normalize visible text consistently and group strings that must use one font page. A message is one atomic unit; both labels of a single choice belong to the same unit.
 
-For Japanese dialogue, render a visible first-line speaker label such as `【話者】` before the body; leave narration unlabeled. Apply the label before glyph extraction and page packing so the delimiters and speaker name are guaranteed to exist on the selected page. Record the label format in the import manifest and validate it against generated events.
+For Japanese dialogue, render a visible first-line speaker label such as `【話者】` before the body; leave narration unlabeled. Apply the label before glyph extraction and page packing so the delimiters and speaker name are guaranteed to exist on the selected page. For this inline-label layout, default named messages to `textY=0` so the label overlaps the upper frame row and keep narration at `textY=1`. Record the label format and both Y policies in the import manifest, validate every generated event, and inspect a native runtime capture.
 
 Pack only glyphs used by the script. Keep GB Studio compiler and runtime page selection coupled with `!F:<font-id>!` before every message, choice label, and SpriteText payload. Exclude syntax-sensitive byte values and keep physical PNG tile positions aligned with byte codes.
 

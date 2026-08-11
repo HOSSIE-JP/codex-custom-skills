@@ -50,8 +50,12 @@ Make the speaker visually distinct from the body before font-page packing. For J
 - Normalize the speaker, delimiters, newline, and body as one atomic message unit so `【` and `】` are included in the selected font page.
 - Keep `speaker`, `sourceText`, and `generatedText` separately in the manifest.
 - Record `dialogueRuntime.speakerLabelFormat` as `【{speaker}】` and validate the manifest, generated `EVENT_TEXT`, selected font mapping, and compiled bytes against it.
+- For this inline-label style, set named messages to `EVENT_TEXT.textY = 0`. The label occupies the upper frame row while the three body lines begin below it.
+- Keep unlabeled narration at `EVENT_TEXT.textY = 1`; do not move narration upward merely because spoken lines use Y=0.
+- Store `namedSpeakerTextY`, `narrationTextY`, and `speakerLabelOverlapsFrame` in authoritative runtime data and copy the resolved `textY` into each manifest message record.
+- Validate the policy in every generated hardware-mode event and inspect a native 160x144 runtime capture for frame collision, label legibility, and body-line clipping.
 
-If a project deliberately uses a name box, avatar, or another label style, declare that format explicitly instead of silently omitting the distinction.
+If a project deliberately uses a name box, avatar, or another label style, declare that format and its Y policy explicitly instead of silently omitting the distinction.
 
 ## Dialogue window and input
 
