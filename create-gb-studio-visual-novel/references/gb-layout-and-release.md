@@ -16,6 +16,8 @@ For `messageSafeWide`, compose artwork into the top 160x96 and reserve the lower
 
 Keep title, logo, and menu text deterministic and clear prompt tiles before transition.
 
+When a message uses an inline first-line speaker label such as `【話者】`, set the named message's `EVENT_TEXT.textY` to `0`. This places the label over the upper dialogue-frame row and leaves body rows 1 through 3 visually grouped below it. Keep unlabeled narration at `textY=1`. Record `namedSpeakerTextY`, `narrationTextY`, and the frame-overlap policy in authoritative runtime data and the import manifest. Validate every generated message in each hardware mode, then inspect a native 160x144 runtime capture; JSON coordinates alone do not prove that the label reads cleanly against the chosen frame art. A declared name box, avatar label, or other project-specific speaker treatment may override this default.
+
 ## Seam-resistant GBC conversion
 
 The legal limits are at most four colors per 8x8 tile, at most seven background palettes, and at most 384 unique tiles. Treat them as ceilings, not quality targets.

@@ -63,7 +63,10 @@ For text validation, keep these stable fields:
 {
   "dialogueRuntime": {
     "speakerLabelFormat": "【{speaker}】",
-    "narrationSpeakerLabel": false
+    "narrationSpeakerLabel": false,
+    "namedSpeakerTextY": 0,
+    "narrationTextY": 1,
+    "speakerLabelOverlapsFrame": true
   },
   "statistics": {"messages": 0, "choices": 0},
   "messages": [
@@ -72,6 +75,7 @@ For text validation, keep these stable fields:
       "speaker": "話者",
       "sourceText": "本文",
       "generatedText": "【話者】\n本文",
+      "textY": 0,
       "fontPage": 0
     }
   ],

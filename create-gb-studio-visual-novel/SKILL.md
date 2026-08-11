@@ -104,7 +104,7 @@ Visually inspect full resolution, face and hand crops, proportion and body-width
 
 ### 6. Implement and release through the shared GB skills
 
-Generate stable GB Studio resources from the normalized source. Preserve the standard two-stage typewriter input, Japanese font-page contract, branch state, music transitions, and ending return flow.
+Generate stable GB Studio resources from the normalized source. Preserve the standard two-stage typewriter input, Japanese font-page contract, branch state, music transitions, and ending return flow. For inline first-line speaker labels such as `【話者】`, default named messages to `textY=0` so the label overlaps the upper dialogue-frame row, while narration remains at `textY=1`; record and validate the policy instead of hardcoding one Y value for every message.
 
 For two- or three-option decisions, prefer the full dialogue-width menu layout. Add a short input-release wait before each menu so the A press that closed a preceding message or fullscreen still cannot select the first option. Verify option counts and directional links in generated resources or compiled `.MENUITEM` output, then confirm legibility and navigation with visible runtime input. Do not reduce three choices to two until a real target limitation is demonstrated.
 
