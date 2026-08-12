@@ -1,0 +1,4 @@
+interface:
+  display_name: "Clothing Reference Reconstructor"
+  short_description: "Generate layered four-view clothing sheets"
+  default_prompt: "Use $ai-clothing-reference-reconstructor to turn a character image into separate outerwear, inner-outfit, and underwear four-view clothing sheets."
