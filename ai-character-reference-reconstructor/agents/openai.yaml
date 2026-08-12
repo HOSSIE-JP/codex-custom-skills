@@ -1,0 +1,9 @@
+interface:
+  display_name: "AIキャラクターリファレンス再構築"
+  short_description: "参照画像から3〜4枚の分離型ビューシートと英語タグを作成"
+  icon_small: "./assets/icon-small.svg"
+  icon_large: "./assets/icon-large.png"
+  brand_color: "#1E5AA8"
+  default_prompt: "添付した1枚以上のキャラクター画像から、全身四方向、頭部六方向、厳選六表情を別画像として生成し、必要な場合のみ固有パーツ詳細も作成してください。最後に英語タグ辞書と統合タグ列をテキストで出力してください。"
+policy:
+  allow_implicit_invocation: true

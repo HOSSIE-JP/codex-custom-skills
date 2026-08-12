@@ -24,6 +24,8 @@
 !/geargrafx-debugging/**
 !/xna-to-godot-migration/
 !/xna-to-godot-migration/**
+!/ai-character-reference-reconstructor/
+!/ai-character-reference-reconstructor/**
 
 # Generated caches and local development state.
 **/__pycache__/

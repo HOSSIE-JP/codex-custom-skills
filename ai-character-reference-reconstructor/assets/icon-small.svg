@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Character reference sheet icon">
+  <rect width="128" height="128" rx="22" fill="#1E5AA8"/>
+  <rect x="16" y="18" width="42" height="44" rx="6" fill="#FFFFFF"/>
+  <rect x="70" y="18" width="42" height="44" rx="6" fill="#FFFFFF"/>
+  <rect x="16" y="74" width="42" height="36" rx="6" fill="#FFFFFF"/>
+  <rect x="70" y="74" width="42" height="36" rx="6" fill="#FFFFFF"/>
+  <circle cx="37" cy="34" r="8" fill="#55C9C1"/>
+  <path d="M27 55c2-10 7-15 10-15s8 5 10 15" fill="#55C9C1"/>
+  <circle cx="91" cy="34" r="8" fill="#55C9C1"/>
+  <path d="M79 55c4-10 8-15 12-15s8 5 12 15" fill="#55C9C1"/>
+  <circle cx="37" cy="88" r="7" fill="#F2C94C"/>
+  <path d="M26 104c3-8 7-12 11-12s8 4 11 12" fill="#F2C94C"/>
+  <path d="M79 84h24M79 92h24M79 100h16" stroke="#E35D6A" stroke-width="5" stroke-linecap="round"/>
+</svg>
