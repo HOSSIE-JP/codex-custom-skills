@@ -1,0 +1,9 @@
+{
+  "formatVersion": 2,
+  "projectId": "replace-with-project-id",
+  "projectRules": {
+    "agePolicy": "record an exact age or explicit age category for every character",
+    "adultContentPolicy": "disabled unless requested and every involved character is confirmed adult"
+  },
+  "characters": []
+}

@@ -1,0 +1,13 @@
+{
+  "formatVersion": 1,
+  "target": "replace-with-engine-and-version",
+  "sharedSourceAggregateSha256": "replace-with-current-aggregate-sha256",
+  "mappings": [
+    {
+      "sharedId": "line.start.opening",
+      "action": "consumed",
+      "targetRefs": ["replace-with-target-reference"],
+      "reason": ""
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "formatVersion": 2,
+  "projectId": "replace-with-project-id",
+  "revision": 1,
+  "status": "REVIEW_REQUIRED",
+  "startSceneId": "scene.start",
+  "stateVariables": [],
+  "cues": [],
+  "endings": [
+    {
+      "id": "ending.default",
+      "title": "仮エンディング",
+      "sceneId": "scene.start"
+    }
+  ],
+  "scenes": [
+    {
+      "id": "scene.start",
+      "summary": "replace-with-scene-purpose",
+      "entries": [
+        {
+          "type": "line",
+          "id": "line.start.opening",
+          "speaker": "narrator",
+          "text": "ここに現在の作品の冒頭本文を記述する。"
+        }
+      ]
+    }
+  ]
+}

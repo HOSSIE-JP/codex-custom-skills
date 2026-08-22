@@ -1,0 +1,18 @@
+{
+  "formatVersion": 2,
+  "projectId": "replace-with-project-id",
+  "revision": 1,
+  "status": "REVIEW_REQUIRED",
+  "approvedRevision": null,
+  "premise": "replace-with-premise",
+  "themeQuestion": "replace-with-theme-question",
+  "structureLensCandidates": [],
+  "selectedStructureLenses": [],
+  "characterArcs": [],
+  "beats": [],
+  "sceneBoxes": [],
+  "branchAndJoinPlan": [],
+  "endingPlan": [],
+  "semanticCuePlan": [],
+  "reviewNote": ""
+}

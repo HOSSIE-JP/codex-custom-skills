@@ -1,0 +1,6 @@
+interface:
+  display_name: "PCE VN Game Builder"
+  short_description: "Approved Japanese VN packs to tested PCE games"
+  default_prompt: "Use $create-pce-game-editor-visual-novel to integrate this approved shared VN pack into a CD-ROM2 game and validate every ending."
+policy:
+  allow_implicit_invocation: true

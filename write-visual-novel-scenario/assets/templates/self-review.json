@@ -1,0 +1,10 @@
+{
+  "formatVersion": 2,
+  "status": "required",
+  "passes": {
+    "mechanical": {"status": "required", "evidence": "", "revisions": [], "remainingConcerns": []},
+    "readAloud": {"status": "required", "evidence": "", "revisions": [], "remainingConcerns": []},
+    "characterVoice": {"status": "required", "evidence": "", "revisions": [], "remainingConcerns": []},
+    "expositionAndBranchJoins": {"status": "required", "evidence": "", "revisions": [], "remainingConcerns": []}
+  }
+}

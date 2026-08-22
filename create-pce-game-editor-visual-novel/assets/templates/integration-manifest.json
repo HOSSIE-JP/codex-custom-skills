@@ -1,0 +1,29 @@
+{
+  "formatVersion": 1,
+  "target": "pce-game-editor:cd-rom2",
+  "sharedSourceAggregateSha256": "",
+  "mappings": [],
+  "generator": "create-pce-game-editor-visual-novel",
+  "targetMedia": "cd-rom2",
+  "sharedPack": {
+    "revision": 1,
+    "status": "APPROVED",
+    "sourceAggregateSha256": "",
+    "sourceFiles": {}
+  },
+  "sharedIntegrationValidation": {},
+  "pceScenes": { "path": "assets/pce-vn-scenes.json", "sha256": "" },
+  "inputs": [],
+  "generated": [],
+  "assets": [],
+  "consumption": {},
+  "verification": {
+    "cdPreflight": "not-run",
+    "focusedTests": "not-run",
+    "fullTests": "not-run",
+    "build": "not-run",
+    "mainPath": "not-run",
+    "endingPaths": [],
+    "physicalHardware": "external-gate"
+  }
+}

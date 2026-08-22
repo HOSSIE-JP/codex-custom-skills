@@ -1,9 +1,0 @@
-{
-  "formatVersion": 1,
-  "projectRules": {
-    "castSize": "replace-with-current-project-cast-size",
-    "agePolicy": "record exact age or explicit age category for every depicted character",
-    "adultContentPolicy": "disabled unless the current brief explicitly requests it and every involved character is confirmed adult"
-  },
-  "characters": []
-}

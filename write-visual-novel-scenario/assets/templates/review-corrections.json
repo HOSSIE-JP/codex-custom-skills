@@ -1,0 +1,7 @@
+{
+  "formatVersion": 1,
+  "sourceAggregateSha256": "replace-with-review-manifest-aggregate-sha256",
+  "edits": [
+    {"id": "line.start.opening", "field": "text", "before": "修正前の本文", "after": "修正後の本文", "reason": "修正理由"}
+  ]
+}

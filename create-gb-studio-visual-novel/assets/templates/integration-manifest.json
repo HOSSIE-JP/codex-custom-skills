@@ -1,0 +1,27 @@
+{
+  "formatVersion": 1,
+  "target": "gb-studio",
+  "sharedSourceAggregateSha256": "replace-with-current-aggregate-sha256",
+  "mappings": [
+    {
+      "sharedId": "line.start.opening",
+      "action": "consumed",
+      "targetRefs": [
+        "replace-with-gb-resource-or-event-reference"
+      ],
+      "reason": ""
+    }
+  ],
+  "generated": [],
+  "substitutions": [],
+  "verification": {
+    "normalizedTextComparison": "not-run",
+    "fontBytes": "not-run",
+    "paletteTilesSprites": "not-run",
+    "officialRomBuild": "not-run",
+    "officialWebBuild": "not-run",
+    "mainPath": "not-run",
+    "endingPaths": [],
+    "physicalHardware": "external-gate"
+  }
+}

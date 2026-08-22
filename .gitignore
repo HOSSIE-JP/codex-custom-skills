@@ -16,6 +16,10 @@
 !/compose-pce-psg/**
 !/create-gb-studio-visual-novel/
 !/create-gb-studio-visual-novel/**
+!/create-pce-game-editor-visual-novel/
+!/create-pce-game-editor-visual-novel/**
+!/write-visual-novel-scenario/
+!/write-visual-novel-scenario/**
 !/ishi-no-ura-pce-vn-authoring/
 !/ishi-no-ura-pce-vn-authoring/**
 !/ishi-no-ura-pce-vn-scenario-design/

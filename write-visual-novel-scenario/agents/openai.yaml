@@ -1,0 +1,6 @@
+interface:
+  display_name: "Japanese VN Scenario Writer"
+  short_description: "機種共通の日本語VN設計・台本・レビュー"
+  default_prompt: "Use $write-visual-novel-scenario to design and write an engine-neutral Japanese visual novel from my brief."
+policy:
+  allow_implicit_invocation: true

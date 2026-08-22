@@ -1,42 +1,70 @@
 ---
 name: compose-pce-psg
-description: Compose and revise original PC Engine / TurboGrafx-16 PSG BGM, songs, sound effects, jingles, and looping music as one PCE Game Editor version 2 *.psg.json file. Use for requests mentioning PCE PSG composition, six-channel HuC6280 music, melody/chorus sections, loopable retro BGM, or an import-ready PSG JSON file.
+description: Compose and revise original PC Engine / TurboGrafx-16 PSG BGM, songs, sound effects, jingles, and loops from a high-level musical score, then generate a deterministic PCE Game Editor version 2 PSG JSON and music audit. Use for HuC6280 six-channel composition or an import-ready *.psg.json; stop before project integration, builds, or playback QA.
 ---
 
 # Compose PCE PSG
 
-Create one original, import-ready PCE PSG JSON file from a natural-language brief. Stop after creating the file. The user is responsible for importing it into a project, building ROM or CD media, and checking playback in an emulator or on hardware.
+Turn a musical brief into an original, editable high-level score and a deterministic PCE Game Editor PSG asset. Creative decisions belong in the score; scripts calculate pitch periods, expand motifs and durations, detect structural problems, and produce audit evidence.
 
 ## Workflow
 
-1. Read [request-template.md](references/request-template.md). Ask only about missing conditions that materially change the composition; otherwise apply its defaults.
-2. Copy [score-template.json](assets/score-template.json) outside the skill directory and adapt it into an original structured score. Follow [score-format.md](references/score-format.md).
-3. Plan the sections, harmony, melody, accompaniment, bass, and optional noise percussion before filling the events. Allocate at most one track to each channel from 0 through 5.
-4. Give adjacent sections audible musical contrast through register, rhythm, harmony, density, wave, or volume. For a loop, make the final harmony and phrase lead naturally back to the opening.
-5. Generate the import file:
+1. Read [request-template.md](references/request-template.md) and normalize purpose, emotion, scene function, profile, form, density, and loop intent. Ask only when a missing choice materially changes the music.
+2. Read the selected profile and relevant review lenses in [music-theory-lenses.md](references/music-theory-lenses.md). Treat them as diagnostic lenses with counterexamples, never as universal composition laws.
+3. Copy [score-template.json](assets/score-template.json) outside the skill directory. Author form, harmony or modal plan, motifs, part roles, channel allocation, ranges, and notes according to [score-format.md](references/score-format.md).
+4. Compose in four passes:
+   - form and motif recurrence/variation;
+   - melody, harmony or modal center, and voice leading;
+   - rhythm, rests, density, register, timbre, and channel balance;
+   - loop seam and repetition-fatigue review.
+5. Record each pass in `review.passes`. Do not mark audition complete unless a person actually listened to a preview, PCE Game Editor playback, emulator, or hardware.
+6. Generate all standard artifacts:
 
    ```powershell
    node "<skill-dir>\scripts\compose-pce-psg.js" --score "<score.json>" --out "<output-dir>"
    ```
 
-6. Fix any generation error in the score. These checks only prevent structurally invalid output; they are not playback, emulator, or hardware verification.
-7. Deliver only `<id>.psg.json` and a short note describing important musical assumptions.
+   Add `--preview` only when an approximate WAV is useful for audition. It is not a hardware-faithful render or a standard deliverable.
+7. Read both audit files. Fix `technical-error` findings and address or explicitly waive each `profile-warning`. Static analysis alone cannot prove naturalness.
+8. Verify the SHA chain:
 
-## Construction Rules
+   ```powershell
+   node "<skill-dir>\scripts\verify-pce-psg-artifacts.js" --audit "<output-dir>\<id>.audit.json"
+   ```
 
-- Write PCE Game Editor `version: 2` JSON containing exactly one `psg-song` or `psg-sfx` asset.
-- Keep BPM at 30–300, total steps at 1–4096, pattern events at 2048 or fewer, channels at 0–5, period at 1–4095, event volume at 0–31, and wave at 0–45.
-- Put noise only on channels 4 or 5. Never emit two events for the same step and channel.
-- Use `psg-song` with `loop: true` for looping BGM. Use `psg-sfx` with `loop: false` for one-shot jingles and effects.
-- Treat waves 0–44 as timbral selections and wave 45 as the user square wave.
-- Do not imitate a copyrighted melody. Translate references into abstract traits such as tempo, register, texture, rhythm, and section behavior.
+9. Deliver the score, PSG JSON, audit JSON, and audit Markdown. State whether audition is complete or still an external gate.
 
-## Scope Boundary
+## Essential constraints
 
-This skill does not import the JSON into PCE Game Editor, modify a game project, create HuCARD or Super CD-ROM2 binaries, build ROM/CUE media, run Test Play or an emulator, inspect PSG hardware state, or write a validation report. Those integration and playback checks are completed by a human after delivery.
+- New work uses score schema version 2 and one of `tonal`, `modal`, `ambient`, `action`, or `sfx-jingle`.
+- Note names or MIDI notes are authoritative. The generator derives 12-TET A4=440 Hz periods with the current HuC6280 clock formula and rejects an explicit period that disagrees.
+- The grid is fixed at four steps per quarter note. True swing, triplets, microtonality, and continuous pitch bend are outside version 2.
+- Use at most six monophonic channels. The generator rejects overlapping notes on one channel rather than stealing a voice. Noise is valid only on channels 4 and 5.
+- PCE Game Editor output remains one version 2 `psg-song` or `psg-sfx` asset, with at most 4096 steps and 2048 pattern events.
+- A song loops over the complete asset. Use `intentionalDiscontinuity` only when an audible seam is a deliberate composition choice.
+- Do not reproduce a copyrighted melody. Convert references into abstract tempo, register, texture, rhythm, energy, and form traits.
 
-## Output Contract
+## Legacy scores
 
-Write exactly one deliverable to the chosen output directory:
+For an existing schema version 1 event score, migrate without inferring harmony, motifs, tonality, or style:
 
-- `<id>.psg.json`: PCE Game Editor version 2 PSG import file.
+```powershell
+node "<skill-dir>\scripts\migrate-pce-psg-score.js" --score "<v1-score.json>" --out "<output-dir>"
+```
+
+Migrated `legacyExact` parts preserve the old PSG JSON bytes. Their audit intentionally skips musical-style conclusions.
+
+## Scope boundary
+
+Stop before importing the asset into PCE Game Editor, registering scene cues, modifying a project, building HuCARD or CD-ROM2 media, or claiming emulator/hardware playback. Those checks belong to the PCE integration skill. CD-DA, ADPCM, voice generation, external DAW production, MusicXML, and engraved notation are outside this skill.
+
+## Output contract
+
+Standard output contains exactly:
+
+- `<id>.score.json`: normalized editable score and recorded review decisions.
+- `<id>.psg.json`: import-ready PCE Game Editor version 2 asset.
+- `<id>.audit.json`: hashes, objective metrics, findings, and review state.
+- `<id>.audit.md`: human-readable audit.
+
+An optional `<id>.preview.wav` is produced only with `--preview`.

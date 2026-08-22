@@ -1,0 +1,14 @@
+{
+  "formatVersion": 2,
+  "allowedSpeakers": ["narrator"],
+  "maxVisibleCharacters": null,
+  "awkwardPhrases": [
+    {"phrase": "以上の理由により", "suggestion": "会話では話者らしい短い接続を検討する", "severity": "warning"},
+    {"phrase": "することが可能です", "suggestion": "自然な動詞へ短縮する", "severity": "warning"}
+  ],
+  "aiLikePatterns": [
+    {"pattern": "ということになります[。！]?$", "detail": "直前の内容を説明し直していないか確認する"}
+  ],
+  "repeatedSentenceThreshold": 3,
+  "repeatedSentenceMinCharacters": 12
+}

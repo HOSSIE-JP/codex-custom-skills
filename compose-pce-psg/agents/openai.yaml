@@ -1,10 +1,7 @@
 interface:
-  display_name: compose pce psg
-  short_description: Compose and revise original PC Engine / TurboGrafx-16 PSG BGM,
-    songs, sound effects, jingles, and looping music as one PCE Game Editor version
-    2 *.psg.json file. Use for requests mentioning PCE PSG composition, six-channel
-    HuC6280 music, melody/chorus sections, loopable retro BGM, or an import-ready
-    PSG JSON file.
+  display_name: Compose PCE PSG
+  short_description: Compose original HuC6280 music from a high-level score and
+    generate deterministic PCE Game Editor PSG plus music audit artifacts.
   icon_small: assets/icon.svg
   icon_large: assets/icon.svg
 policy:

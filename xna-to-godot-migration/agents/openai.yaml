@@ -1,4 +1,0 @@
-interface:
-  display_name: "XNA to Godot Migration"
-  short_description: "Migrate XNA and MonoGame projects to Godot"
-  default_prompt: "Use $xna-to-godot-migration to analyze this XNA project and migrate it to Godot in verified stages."

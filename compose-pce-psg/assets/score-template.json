@@ -1,0 +1,219 @@
+{
+  "schemaVersion": 2,
+  "id": "original_loop",
+  "name": "Original Loop",
+  "type": "psg-song",
+  "loop": true,
+  "intent": {
+    "purpose": "Visual novel conversation BGM",
+    "emotion": [
+      "warm",
+      "curious"
+    ],
+    "sceneFunction": "Support dialogue without masking it",
+    "energyCurve": [
+      "A: low",
+      "B: medium"
+    ],
+    "tensionCurve": [
+      "A: stable",
+      "B: return"
+    ],
+    "hardwareTargets": [
+      "generic"
+    ]
+  },
+  "styleProfile": "tonal",
+  "transport": {
+    "bpm": 108,
+    "timeSignature": "4/4",
+    "resolution": 4,
+    "bars": 4,
+    "speed": 6,
+    "loop": {
+      "enabled": true,
+      "startStep": 0,
+      "endStep": 64,
+      "intentionalDiscontinuity": false
+    }
+  },
+  "tonality": {
+    "tonic": "C",
+    "mode": "major",
+    "scale": [
+      "C",
+      "D",
+      "E",
+      "F",
+      "G",
+      "A",
+      "B"
+    ]
+  },
+  "form": [
+    {
+      "id": "A",
+      "name": "A",
+      "startBar": 1,
+      "endBar": 2,
+      "function": "stable opening",
+      "energy": 0.25,
+      "tension": 0.2
+    },
+    {
+      "id": "B",
+      "name": "B",
+      "startBar": 3,
+      "endBar": 4,
+      "function": "gentle answer and loop return",
+      "energy": 0.45,
+      "tension": 0.35
+    }
+  ],
+  "harmony": [
+    {
+      "step": 0,
+      "duration": 16,
+      "symbol": "C",
+      "function": "T",
+      "pitches": ["C3", "E3", "G3"]
+    },
+    {
+      "step": 16,
+      "duration": 16,
+      "symbol": "F",
+      "function": "S",
+      "pitches": ["F3", "A3", "C4"]
+    },
+    {
+      "step": 32,
+      "duration": 16,
+      "symbol": "G",
+      "function": "D",
+      "pitches": ["G3", "B3", "D4"]
+    },
+    {
+      "step": 48,
+      "duration": 16,
+      "symbol": "C",
+      "function": "T",
+      "pitches": ["C3", "E3", "G3"]
+    }
+  ],
+  "motifs": [
+    {
+      "id": "answer",
+      "intervals": [0, 2, 4],
+      "rhythm": [1, 1, 2],
+      "description": "short rising answer"
+    }
+  ],
+  "parts": [
+    {
+      "id": "melody",
+      "role": "melody",
+      "channel": 0,
+      "range": {
+        "min": "C4",
+        "max": "C6"
+      },
+      "wave": 45,
+      "volume": 18,
+      "events": [
+        {
+          "step": 0,
+          "duration": 4,
+          "note": "C4",
+          "articulation": "normal"
+        },
+        {
+          "step": 16,
+          "duration": 4,
+          "note": "F4",
+          "articulation": "normal"
+        },
+        {
+          "step": 32,
+          "duration": 4,
+          "note": "G4",
+          "articulation": "normal"
+        },
+        {
+          "step": 48,
+          "duration": 4,
+          "note": "C5",
+          "motifRef": "answer",
+          "transform": {
+            "transpose": 0,
+            "octave": 0,
+            "inversion": true,
+            "rhythmScale": 1,
+            "fragmentStart": 0,
+            "fragmentLength": 3
+          },
+          "articulation": "legato"
+        }
+      ]
+    },
+    {
+      "id": "bass",
+      "role": "bass",
+      "channel": 1,
+      "range": {
+        "min": "C2",
+        "max": "C4"
+      },
+      "wave": 20,
+      "volume": 12,
+      "events": [
+        { "step": 0, "duration": 16, "note": "C3", "articulation": "normal" },
+        { "step": 16, "duration": 16, "note": "F3", "articulation": "normal" },
+        { "step": 32, "duration": 16, "note": "G3", "articulation": "normal" },
+        { "step": 48, "duration": 16, "note": "C3", "articulation": "normal" }
+      ]
+    },
+    {
+      "id": "percussion",
+      "role": "percussion",
+      "channel": 4,
+      "noise": true,
+      "volume": 6,
+      "events": [
+        { "step": 0, "duration": 1, "noisePeriod": 7, "articulation": "staccato" },
+        { "step": 16, "duration": 1, "noisePeriod": 7, "articulation": "staccato" },
+        { "step": 32, "duration": 1, "noisePeriod": 7, "articulation": "staccato" },
+        { "step": 48, "duration": 1, "noisePeriod": 7, "articulation": "staccato" }
+      ]
+    }
+  ],
+  "mix": {
+    "channels": 5,
+    "masterVolume": 90,
+    "defaultWave": 45,
+    "fallbackPeriod": 428,
+    "densityTarget": "dialogue-light"
+  },
+  "review": {
+    "audition": "pending",
+    "notes": [],
+    "passes": {
+      "formMotif": {
+        "status": "pending",
+        "notes": ""
+      },
+      "melodyHarmony": {
+        "status": "pending",
+        "notes": ""
+      },
+      "rhythmArrangement": {
+        "status": "pending",
+        "notes": ""
+      },
+      "loopFatigue": {
+        "status": "pending",
+        "notes": ""
+      }
+    },
+    "waivedFindingIds": []
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "formatVersion": 2,
+  "projectId": "replace-with-project-id",
+  "title": "replace-with-title",
+  "language": "ja",
+  "audience": "replace-with-audience-and-rating",
+  "expectedMinutes": null,
+  "genres": [],
+  "tone": [],
+  "contentBoundaries": [],
+  "branching": {
+    "choiceCount": 0,
+    "endingCount": 1,
+    "choiceHistoryCount": 1,
+    "stateVariables": []
+  },
+  "reviewRisk": {
+    "usesDialect": false,
+    "usesSpecializedFacts": false,
+    "sensitiveTopics": []
+  },
+  "externalReview": {
+    "status": "pending-user-decision",
+    "externalTransmissionApproved": false,
+    "note": ""
+  }
+}

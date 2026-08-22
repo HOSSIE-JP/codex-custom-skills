@@ -1,4 +1,6 @@
 interface:
   display_name: "Create GB Studio Visual Novel"
-  short_description: "Create reusable Japanese GB Studio visual novels"
-  default_prompt: "Use $create-gb-studio-visual-novel to create or revise a title-agnostic Japanese GB Studio visual novel from the current brief, without inheriting genre, cast, rating, branch structure, or art direction from another project."
+  short_description: "Integrate approved Japanese VN scripts into GB Studio"
+  default_prompt: "Use $create-gb-studio-visual-novel to turn an approved shared Japanese VN authoring pack into a tested GB Studio ROM and Web build."
+policy:
+  allow_implicit_invocation: true
