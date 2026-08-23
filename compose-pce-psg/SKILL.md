@@ -43,6 +43,7 @@ Turn a musical brief into an original, editable high-level score and a determini
 - PCE Game Editor output remains one version 2 `psg-song` or `psg-sfx` asset, with at most 4096 steps and 2048 pattern events.
 - A song loops over the complete asset. Use `intentionalDiscontinuity` only when an audible seam is a deliberate composition choice.
 - Do not reproduce a copyrighted melody. Convert references into abstract tempo, register, texture, rhythm, energy, and form traits.
+- `transform.transpose` is additive on top of the occurrence's literal `note`; note-name range comparison (`range.min`/`range.max`) is chromatic within the octave, not alphabetical (e.g. `F2 < Bb2`); and `form[].function` (≤128 chars), `review.notes[]` entries (≤256 chars), and `review.passes.<pass>.notes` (≤512 chars) all have real enforced length caps. See [score-format.md](references/score-format.md).
 
 ## Legacy scores
 

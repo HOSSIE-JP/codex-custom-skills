@@ -93,7 +93,7 @@ The score is the editable source of truth. `scripts/compose-pce-psg.js` validate
 }
 ```
 
-Energy and tension are numbers from 0 through 1. Harmony pitches include octaves so voice-leading and strong-beat analysis can use actual register. A modal or ambient score may leave `harmony` empty, but must still describe its pitch center or scale in `tonality`.
+Energy and tension are numbers from 0 through 1. Harmony pitches include octaves so voice-leading and strong-beat analysis can use actual register. A modal or ambient score may leave `harmony` empty, but must still describe its pitch center or scale in `tonality`. `form[].function` is at most 128 characters.
 
 ## Motifs and transformations
 
@@ -117,6 +117,8 @@ Intervals are semitones relative to the occurrence root. Rhythm values are posit
 - `fragmentStart` and `fragmentLength`.
 
 The occurrence `duration` must equal the transformed fragment's total duration. The normalized score records the motif reference and transformation; the PSG pattern contains the expanded notes.
+
+**`transpose` is additive on top of the occurrence's literal `note`, not a replacement for it.** To transpose a motif occurrence up a fifth, keep `note` as the motif's original, untransposed anchor pitch and set only `transform.transpose: 7`. Do not pre-transpose `note` yourself and also set `transform.transpose` — the generator applies `transpose` on top of whatever `note` already is, so doing both double-transposes the occurrence and throws an out-of-declared-range error.
 
 ## Parts and events
 
@@ -155,6 +157,8 @@ Pitched part:
   ]
 }
 ```
+
+`range.min`/`range.max` compare note names **chromatically within the octave, not alphabetically**. Within octave 2: `C2 < D2 < E2 < F2 < G2 < A2 < Bb2 < B2`. A bass line touching both `F2` and `Bb2` needs `range: {min: "F2", max: "Bb2"}`, not the reverse — reversing it throws `range.min must not exceed max`.
 
 Noise part:
 
@@ -205,6 +209,8 @@ Noise part:
   }
 }
 ```
+
+`review.notes[]` strings are at most 256 characters each; `review.passes.<passName>.notes` strings are at most 512 characters each.
 
 Review status accepts `pending` or `complete`. A profile warning remains visible when waived. Audition must remain pending until actual listening occurs.
 

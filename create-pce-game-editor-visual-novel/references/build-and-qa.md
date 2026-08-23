@@ -5,7 +5,7 @@
 1. Start from the checkout's official CD VN template.
 2. Inspect all generated PSG JSON with current `inspectPsgJson`, then import with `importPsgJson`. Import PNG images/sprites with `importImage`.
 3. Run `inspectVnSceneDocumentBuild` (or its discovered replacement) with the proposed raw scene document, current asset document, and CD target. Save diagnostics and scene budgets.
-4. Save scenes only after a clean inspection; run the real VN preparation/build route used by the editor.
+4. Save scenes only after a clean inspection; run the real VN preparation/build route used by the editor. For a concrete non-GUI invocation recipe (including the mandatory CD-DA Track 1 warning-audio asset) see [cd-build-recipe.md](cd-build-recipe.md).
 5. Run focused VN/asset tests and the repository's declared full test command (`npm test` in the current checkout).
 6. Confirm the final `.cue` and every referenced track/data file exist and were produced by the current build.
 
@@ -22,4 +22,4 @@ Generate HuCARD only when requested. Re-run target-specific preflight, capacity/
 
 ## Reporting boundaries
 
-Report exact commands, artifacts, hashes, tests, played routes, and warnings. Physical hardware, CRT/LCD appearance, controller feel, and audible output are external gates unless actually tested. New music is PSG only; voice, ADPCM dialogue, and CD-DA authoring are outside this skill.
+Report exact commands, artifacts, hashes, tests, played routes, and warnings. Physical hardware, CRT/LCD appearance, controller feel, and audible output are external gates unless actually tested. New music is PSG only; voice, ADPCM dialogue, and CD-DA authoring are outside this skill. Flag any placeholder CD-DA Track 1 warning audio (e.g. a synthesized tone rather than a real spoken warning) explicitly; see [cd-build-recipe.md](cd-build-recipe.md).

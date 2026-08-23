@@ -12,6 +12,7 @@ from PIL import Image
 SCRIPT_DIR = Path(__file__).resolve().parents[1] / "scripts"
 sys.path.insert(0, str(SCRIPT_DIR))
 
+from apply_pce_menu_shell import apply_menu_shell  # noqa: E402
 from build_integration_manifest import build_manifest  # noqa: E402
 from emit_pce_scenes import cue_mapping, emit  # noqa: E402
 from migrate_pce_v2 import migrate  # noqa: E402
@@ -111,6 +112,59 @@ class IntegrationTests(unittest.TestCase):
             self.assertEqual(manifest["sharedSourceAggregateSha256"], aggregate); self.assertEqual(manifest["sharedIntegrationValidation"]["status"], "pass")
             stale = copy.deepcopy(consumption); stale["sharedSourceAggregateSha256"] = "0" * 64; consumption_path.write_bytes(canonical_json_bytes(stale))
             with self.assertRaisesRegex(ValidationError, "stale"): build_manifest(root, validation_path, scene_path, source_map_path, cue_path, asset_path, consumption_path, [], "cd", root, None)
+
+
+class MenuShellTests(unittest.TestCase):
+    def menu_shell_fixture(self) -> tuple[dict, dict]:
+        scenes_doc = {
+            "version": 2, "settings": {}, "startScene": "scene_opening",
+            "scenes": [
+                {"id": "scene_opening", "fullScreenBg": False, "commands": [{"type": "message", "speaker": "", "text": "はじまり。"}], "nextSceneId": "scene_ending_good"},
+                {"id": "scene_ending_good", "fullScreenBg": False, "commands": [{"type": "message", "speaker": "", "text": "おわり。"}], "nextSceneId": ""},
+            ],
+        }
+        config = {"formatVersion": 1, "scenarios": [{
+            "selectorId": "01_test", "slug": "01_test", "displayName": "テスト編",
+            "titleBgAssetId": "bg_test_title", "startSceneId": "scene_opening", "endingSceneIds": ["scene_ending_good"],
+        }]}
+        return scenes_doc, config
+
+    def test_single_scenario_self_loops_and_tail_is_appended_in_order(self) -> None:
+        scenes_doc, config = self.menu_shell_fixture()
+        result = apply_menu_shell(scenes_doc, config)
+        self.assertEqual(len(result["scenes"]), 3)
+        self.assertEqual(result["startScene"], "01_test")
+        selector = next(s for s in result["scenes"] if s["id"] == "01_test")
+        self.assertEqual(selector["name"], "シナリオ選択/01_test_テスト編")
+        next_jump = next(c for i, c in enumerate(selector["commands"]) if c.get("type") == "label" and c["name"] == "NEXT_SCR")
+        self.assertEqual(selector["commands"][selector["commands"].index(next_jump) + 1], {"type": "jump", "sceneId": "01_test"})
+        prev_label_index = next(i for i, c in enumerate(selector["commands"]) if c.get("type") == "label" and c["name"] == "PREV_SCR")
+        self.assertEqual(selector["commands"][prev_label_index + 1], {"type": "jump", "sceneId": "01_test"})
+        ending = next(s for s in result["scenes"] if s["id"] == "scene_ending_good")
+        self.assertEqual(ending["commands"][-4:], [
+            {"type": "wait", "frames": 240},
+            {"type": "effect", "effect": "fadeOut", "frames": 90, "intensity": 0, "color": "#000000"},
+            {"type": "audio", "kind": "psg", "action": "stop", "assetId": "", "channel": 0, "target": "bgm"},
+            {"type": "jump", "sceneId": "01_test"},
+        ])
+
+    def test_rejects_ending_scene_id_not_present_in_scenes_document(self) -> None:
+        scenes_doc, config = self.menu_shell_fixture()
+        config["scenarios"][0]["endingSceneIds"].append("scene_missing")
+        with self.assertRaises(ValidationError):
+            apply_menu_shell(scenes_doc, config)
+
+    def test_rejects_selector_id_colliding_with_an_existing_scene(self) -> None:
+        scenes_doc, config = self.menu_shell_fixture()
+        config["scenarios"][0]["selectorId"] = "scene_opening"
+        with self.assertRaises(ValidationError):
+            apply_menu_shell(scenes_doc, config)
+
+    def test_rejects_double_apply_against_an_already_shelled_ending(self) -> None:
+        scenes_doc, config = self.menu_shell_fixture()
+        once = apply_menu_shell(scenes_doc, config)
+        with self.assertRaises(ValidationError):
+            apply_menu_shell(once, config)
 
 
 class SpriteTests(unittest.TestCase):

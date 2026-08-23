@@ -52,7 +52,7 @@ Use one source image per production cut. Build image jobs with:
 python scripts/build_vn_image_prompts.py --bible <shared-pack>\character-bible.json --manifest <gb-visual-manifest.json> --out-dir <prompt-dir>
 ```
 
-Use `imagegen` once per requested asset or variant. Attach identity and exact outfit anchors for recurring characters, preserve the selected project-bound source, and record prompt, inputs, hash, adoption or rejection reason, crop policy, and runtime capture.
+Before generating any character artwork, invoke `ai-character-reference-reconstructor` to create the character's identity anchor sheets from the character images attached to the current request. Do not substitute local project images, prior conversation images, or inferred character settings for the required attached references; if no usable character image is attached, stop image generation and request one. Use the completed reference sheets as the fixed visual authority for `imagegen`, attach the identity and exact outfit anchors to every relevant image job, preserve the selected project-bound source, and record prompt, inputs, hash, adoption or rejection reason, crop policy, and runtime capture.
 
 Generate deterministic text, logos, title elements, and UI with the project-native pipeline rather than raster image generation. Preserve the GBC native-size, palette, tile, anatomy, identity, garment, and silhouette checks in the visual references.
 

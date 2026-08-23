@@ -1,6 +1,6 @@
 ---
 name: create-pce-game-editor-visual-novel
-description: Build, port, integrate, and validate Japanese visual novels for PCE Game Editor from an approved shared VN authoring pack. Use for PCE CD-ROM2 VN scene emission, image and sprite integration, PSG cue mapping, v2 scene migration, CUE builds, optional HuCARD builds, or Geargrafx playthrough QA. Do not use for scenario writing before an approved shared pack exists.
+description: Build, port, integrate, and validate Japanese visual novels for PCE Game Editor from an approved shared VN authoring pack. Use for PCE CD-ROM2 VN scene emission, image and sprite integration, PSG cue mapping, v2 scene migration, CUE builds, optional HuCARD builds, title/scenario-select menu screens, or Geargrafx playthrough QA. Do not use for scenario writing before an approved shared pack exists.
 ---
 
 # Create PCE Game Editor Visual Novel
@@ -17,13 +17,15 @@ Turn an approved `source/vn-authoring/script.json` into a traced PCE Game Editor
 ## Integration workflow
 
 1. For a new work, copy the checkout's official `template/template_pce_vn_cd`; do not reconstruct it. For an existing v2 scene document, use `scripts/migrate_pce_v2.py` to create a review-required shared skeleton, PCE cue map, and ambiguity report. Human approval is required before that skeleton becomes canonical.
-2. Create a PCE integration mapping. Each shared cue must map explicitly to supported PCE commands or to a documented omission/substitution. Engine asset IDs and command details belong in this mapping, never in the shared cue.
-3. Read [images-and-sprites.md](references/images-and-sprites.md). Use `imagegen` for original identity/outfit anchors and one master per asset. Import PNG masters through the current `pce-asset-manager.js` `importImage` path. `pack_sprite_sheet.py` may only assemble supplied transparent frames; it does not generate or retouch art.
+2. Create a PCE integration mapping. Each shared cue must map explicitly to supported PCE commands or to a documented omission/substitution. Engine asset IDs and command details belong in this mapping, never in the shared cue. The cue map is a single flat `{cueId: commands}` lookup with no per-branch variation: if one cue ID is reused across scenes that need different PCE treatment, every use gets byte-identical commands. Split into distinct cue IDs per branch at the shared-pack `script.json` level before integration — this cannot be fixed in the cue map alone. See [authoring-pack-mapping.md](references/authoring-pack-mapping.md).
+3. Read [images-and-sprites.md](references/images-and-sprites.md). Before generating any character artwork, invoke `ai-character-reference-reconstructor` to create the character's identity anchor sheets from the character images attached to the current request. Do not substitute local project images, prior conversation images, or inferred character settings for the required attached references; if no usable character image is attached, stop image generation and request one. Use the completed reference sheets as the fixed visual authority for `imagegen`, then create one inspectable master per asset. A full-BG "kamishibai" alternative to sprite-layer production is also documented there for VNs that don't need per-line portrait swapping, including the origination path for wholly original characters with no attached source image. Import PNG masters through the current `pce-asset-manager.js` `importImage` path. `pack_sprite_sheet.py` may only assemble supplied transparent frames; it does not generate or retouch art.
 4. Invoke `compose-pce-psg` for each original music cue, inspect the resulting version 2 file with current `inspectPsgJson`, then import with current `importPsgJson`. Author only PSG music/SFX. Do not author voice, ADPCM dialogue, or CD-DA.
-5. Emit the supported normalized subset with `scripts/emit_pce_scenes.py`. Unknown entry types, conditional choices, unmapped cues, unknown mapped commands, and non-PSG audio are hard errors. Keep the source map and consumption report.
-6. Run the current CD preflight, import assets, then build. CD-ROM2 CUE is required. HuCARD is optional only when requested and must receive its own preflight, build, capacity checks, and runtime QA.
-7. Generate `pce-integration-manifest.json` with `scripts/build_integration_manifest.py`. Record all source/generated hashes, cue/asset mappings, consumption accounting, substitutions, target media, and verification results.
-8. Follow [build-and-qa.md](references/build-and-qa.md). Verify the main path and shortest path to every ending in Geargrafx or visible GUI test play. Static reachability covers remaining histories; it is not runtime evidence.
+5. Emit the supported normalized subset with `scripts/emit_pce_scenes.py`. Unknown entry types, conditional choices, unmapped cues, unknown mapped commands, and non-PSG audio are hard errors. Any `when` key on an entry or choice option aborts the whole emission, not just that entry. When a design only needs to acknowledge a prior choice with a line or two of reaction text, restructure as a structural scene split instead of introducing state — see [authoring-pack-mapping.md](references/authoring-pack-mapping.md). Keep the source map and consumption report.
+6. Optional: for each speaking character, author a VoiceDesign prompt per [voice-design-prompts.md](references/voice-design-prompts.md), reusing `character-bible.json`'s `voice.style`/`sampleLine`. This is prompt-authoring only; batch per-line synthesis uses the editor's existing `PLUGIN.md` Irodori-TTS IPC channels and stays out of this skill's scope.
+7. If the project needs a title/scenario-select menu or a "return to title" ending flow, apply it now, after emission and before preflight, with `scripts/apply_pce_menu_shell.py` against the emitted PCE scene document. Never add this structure to the shared `script.json` — see [menu-shell-and-title-screen.md](references/menu-shell-and-title-screen.md).
+8. Run the current CD preflight, import assets, then build. CD-ROM2 CUE is required. Every CD-ROM2 build additionally requires exactly one `cdda-warning` asset with the fixed id `cdda_warning`, imported via `pce-asset-manager.js`'s `importAudio`. For the concrete non-GUI build invocation (dry-run pre-check and real build), see [cd-build-recipe.md](references/cd-build-recipe.md). HuCARD is optional only when requested and must receive its own preflight, build, capacity checks, and runtime QA.
+9. Generate `pce-integration-manifest.json` with `scripts/build_integration_manifest.py`. Record all source/generated hashes, cue/asset mappings, consumption accounting, substitutions, target media, and verification results.
+10. Follow [build-and-qa.md](references/build-and-qa.md). Verify the main path and shortest path to every ending in Geargrafx or visible GUI test play. Static reachability covers remaining histories; it is not runtime evidence.
 
 ## Non-negotiable invariants
 
@@ -33,6 +35,9 @@ Turn an approved `source/vn-authoring/script.json` into a traced PCE Game Editor
 - Keep source masters and generated PCE assets hash-linked. Do not hand-edit generated binaries.
 - A successful CD build says nothing about HuCARD feasibility. Validate each target independently.
 - Report physical-device, display, and audio checks as external gates unless actually performed.
+- Every CD-ROM2 build's asset document must carry exactly one `cdda-warning` asset with id `cdda_warning`, even for a project with zero other CD-DA tracks — this is enforced by the checkout's own build validation, not a style choice. See [cd-build-recipe.md](references/cd-build-recipe.md).
+- Title-screen/menu-shell/selector structure and any "loop back to title" ending tail live only in the generated PCE scene document (`assets/pce-vn-scenes.json`), never in the shared `script.json`.
+- `emit_pce_scenes.py` rejects any `when` key and any non-`int` (including `bool`) state value outright, aborting the whole emission with no partial success.
 
 ## Helpers
 
@@ -41,3 +46,5 @@ The scripts use Python 3 standard library except `pack_sprite_sheet.py`, which r
 ```powershell
 python -m unittest discover -s "<skill-dir>\tests" -v
 ```
+
+`scripts/apply_pce_menu_shell.py` is stdlib Python like the rest of these scripts; its tests run with the same command. `scripts/scan_text_budget.js` is Node, not Python — it must run against the live checkout (it dynamically requires the checkout's own `pce-system-card-font.js` and the `iconv-lite` package already present in the checkout's `node_modules`, so it always matches the real encoding logic rather than a shipped reimplementation) and is therefore not exercised by the `python -m unittest discover` command above. Run it directly with `node scripts/scan_text_budget.js --help`; run its own orchestration-logic test with `node scripts/scan_text_budget.test.js`.
