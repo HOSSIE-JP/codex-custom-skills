@@ -65,11 +65,21 @@ def scalar_int(value: Any, label: str) -> int:
     return value
 
 
+def scene_breadcrumb_name(project_slug: str, pce_scene_id: str) -> str:
+    """"<projectSlug>/<shortId>" editor-UI breadcrumb, matching the same id-stays-flat/
+    name-carries-breadcrumb convention as apply_pce_menu_shell.py's selector scenes and
+    apply_asset_names(). A leading "scene_" is stripped from the id for readability
+    (e.g. pce id "scene_prologue" -> name "<slug>/prologue"); never touches `id`."""
+    short_id = pce_scene_id[len("scene_"):] if pce_scene_id.startswith("scene_") else pce_scene_id
+    return f"{project_slug}/{short_id}"
+
+
 def emit(
     script: dict[str, Any],
     cue_map: dict[str, dict[str, Any]],
     speaker_names: dict[str, str] | None = None,
     aggregate: str = "",
+    project_slug: str = "",
 ) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
     if script.get("formatVersion") != 2 or script.get("status") != "APPROVED" or not isinstance(script.get("revision"), int):
         raise ValidationError("emitter requires an approved canonical formatVersion 2 script")
@@ -155,7 +165,10 @@ def emit(
             consumed[entry_type] += 1
             source_entries.append({"sourceEntryId": entry_id, "sourceType": entry_type, "sourceSceneId": scene["id"], "pceSceneId": pce_scene_id, "commandIndexes": list(range(command_start, len(commands))), **extra})
         next_scene = scene.get("nextSceneId", "")
-        pce_scenes.append({"id": pce_scene_id, "fullScreenBg": False, "commands": commands, "nextSceneId": scene_id_map.get(next_scene, "")})
+        pce_scene: dict[str, Any] = {"id": pce_scene_id, "fullScreenBg": False, "commands": commands, "nextSceneId": scene_id_map.get(next_scene, "")}
+        if project_slug:
+            pce_scene["name"] = scene_breadcrumb_name(project_slug, pce_scene_id)
+        pce_scenes.append(pce_scene)
 
     expected = Counter(entry["type"] for scene in scenes for entry in scene.get("entries", []))
     if consumed != expected:
@@ -174,6 +187,7 @@ def main() -> None:
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--source-map", type=Path, required=True)
     parser.add_argument("--consumption-out", type=Path, required=True)
+    parser.add_argument("--project-slug", default="", help="When set, breadcrumbs each emitted scene's editor-UI name field as '<slug>/<shortId>' (id stays flat). Use the same slug passed to apply_pce_menu_shell.py so story scenes and the selector scene share one breadcrumb convention.")
     parser.add_argument("--force", action="store_true")
     args = parser.parse_args()
     try:
@@ -181,7 +195,7 @@ def main() -> None:
         script = data["script.json"]
         speakers = {"narrator": ""}
         speakers.update({str(item["id"]): str(item.get("displayName", item["id"])) for item in data["character-bible.json"].get("characters", [])})
-        pce_document, source_map, consumption = emit(script, cue_mapping(load_json(args.cue_map)), speakers, aggregate)
+        pce_document, source_map, consumption = emit(script, cue_mapping(load_json(args.cue_map)), speakers, aggregate, args.project_slug)
         for path in (args.out, args.source_map, args.consumption_out):
             if path.exists() and not args.force:
                 raise ValidationError(f"Refusing to overwrite existing file: {path}; pass --force explicitly")

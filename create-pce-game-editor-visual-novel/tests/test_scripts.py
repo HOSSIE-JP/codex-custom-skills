@@ -77,6 +77,17 @@ class IntegrationTests(unittest.TestCase):
             self.assertEqual(source_map["sharedSourceAggregateSha256"], aggregate)
             self.assertEqual(next(c for c in scenes["scenes"][0]["commands"] if c["type"] == "message")["speaker"], "アキ")
 
+    def test_scene_name_breadcrumb_is_opt_in_and_strips_scene_prefix(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw); write_pack(root, full_pack())
+            data, _, aggregate, _ = load_shared_pack(root, require_approved=True)
+            scenes_default, _, _ = emit(data["script.json"], cue_mapping(valid_cue_map()), {"aki": "アキ"}, aggregate)
+            self.assertNotIn("name", scenes_default["scenes"][0])
+            scenes_named, _, _ = emit(data["script.json"], cue_mapping(valid_cue_map()), {"aki": "アキ"}, aggregate, "01_test")
+            opening = next(s for s in scenes_named["scenes"] if s["id"] == "scene_opening")
+            self.assertEqual(opening["name"], "01_test/opening")
+            self.assertEqual(opening["id"], "scene_opening")
+
     def test_unknown_command_and_conditional_choice_rejected(self) -> None:
         bad = valid_cue_map(); bad["cues"][0]["commands"] = [{"type": "future"}]
         with self.assertRaises(ValidationError): cue_mapping(bad)
