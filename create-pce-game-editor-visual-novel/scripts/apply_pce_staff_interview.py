@@ -12,11 +12,13 @@ each ending scene found it:
 2. appends a `choice` command to the ending scene offering "view the staff
    interview" (-> the shared interview scene) or "return to title" (->
    `<ending_id>_finish`, which just replays the original trailer);
-3. builds one shared `scene_staff_interview` scene parsed from
-   `source/staff-interview.md` (see references/staff-interview.md for the
-   fixed 8-question format this expects), reusing the selector scene's own
-   title background so no new image asset is required, and ending on the
-   same trailer shape.
+3. builds one or more chained `scene_staff_interview`[`_N`] scenes parsed
+   from `source/staff-interview.md` (see references/staff-interview.md for
+   the fixed 8-question format this expects), reusing the selector scene's
+   own title background so no new image asset is required, and ending on
+   the same trailer shape. The interview is paginated across scenes to stay
+   within the PCE VN engine's 8192-byte-per-scene-pack limit -- a single
+   scene routinely can't hold all eight answers' worth of message commands.
 
 Standing rule: see SKILL.md. Run only after apply_pce_menu_shell.py, and
 only when the project has `source/staff-interview.md`. Because this adds
@@ -52,6 +54,66 @@ DISPLAY_BUDGET = 68
 CHOICE_VIEW_LABEL = "スタッフインタビューを見る"
 CHOICE_BACK_LABEL = "タイトルに戻る"
 STAFF_INTERVIEW_SCENE_ID = "scene_staff_interview"
+
+# PCE VN scene packs (pce-vn-scene-pack.js's createVnScenePackCodec) have a
+# hard 8192-byte cache limit per scene -- exceeding it is a build-blocking
+# error ('PCE VN scene pack "..." is N bytes; split the scene to stay within
+# 8192 bytes'). A single-scene staff interview with ~8 questions' worth of
+# message commands routinely exceeds this (confirmed against real projects
+# in this series), so the interview must be paginated across multiple
+# chained scenes. The byte formula below is an exact match to the real
+# encoder, verified against real generated scenes byte-for-byte:
+#   pack_bytes = headerSize(20)
+#              + command_count * commandSize(19)
+#              + message_count * messageSize(13)
+#              + sum(2 * (len(text) + 1) for each message)   # null-terminated
+#                                                             # 2-byte glyph words
+SCENE_PACK_HEADER_SIZE = 20
+SCENE_PACK_COMMAND_SIZE = 19
+SCENE_PACK_MESSAGE_SIZE = 13
+SCENE_PACK_BYTE_LIMIT = 8192
+# Reserve room for the largest possible non-message overhead a single page
+# could carry (header + a background command + the 4-command return-to-title
+# trailer, i.e. the degenerate single-page case) plus a safety margin, so the
+# per-page message budget below is correct regardless of which page (first,
+# middle, last) ends up holding how many messages.
+_INTERVIEW_PAGE_RESERVED_BYTES = (
+    SCENE_PACK_HEADER_SIZE
+    + SCENE_PACK_COMMAND_SIZE  # background (first page only)
+    + 4 * SCENE_PACK_COMMAND_SIZE  # return-to-title trailer (last page only)
+    + 150  # safety margin
+)
+INTERVIEW_PAGE_MESSAGE_BUDGET = SCENE_PACK_BYTE_LIMIT - _INTERVIEW_PAGE_RESERVED_BYTES
+
+
+def _message_pack_bytes(text: str) -> int:
+    return SCENE_PACK_COMMAND_SIZE + SCENE_PACK_MESSAGE_SIZE + 2 * (len(text) + 1)
+
+
+def paginate_messages(message_texts: list[str], budget: int = INTERVIEW_PAGE_MESSAGE_BUDGET) -> list[list[str]]:
+    """Group message bodies into pages whose total scene-pack byte cost each
+    stays within `budget`, without splitting any single message across
+    pages. Every individual message is far smaller than one page's budget
+    (capped at 68 display entries by pack_text_into_messages), so this never
+    has to hard-split a single message."""
+    pages: list[list[str]] = []
+    current: list[str] = []
+    current_bytes = 0
+    for text in message_texts:
+        cost = _message_pack_bytes(text)
+        if current and current_bytes + cost > budget:
+            pages.append(current)
+            current = []
+            current_bytes = 0
+        current.append(text)
+        current_bytes += cost
+    if current:
+        pages.append(current)
+    return pages
+
+
+def _interview_page_scene_id(index: int) -> str:
+    return STAFF_INTERVIEW_SCENE_ID if index == 0 else f"{STAFF_INTERVIEW_SCENE_ID}_{index + 1}"
 
 _TRAILER_TYPES = ("wait", "effect", "audio", "jump")
 
@@ -238,25 +300,44 @@ def _selector_background_asset_id(doc: dict[str, Any], selector_id: str) -> str:
     raise ValidationError(f"selector scene {selector_id} has no background command to reuse for the staff interview")
 
 
-def build_interview_scene(
+def build_interview_scenes(
     qa_pairs: list[tuple[str, str]],
     background_asset_id: str,
     trailer: list[dict[str, Any]],
-) -> dict[str, Any]:
-    commands: list[dict[str, Any]] = [
-        {"type": "background", "assetId": background_asset_id, "transition": "fade", "fadeOutFrames": 30, "fadeInFrames": 30, "x": 2, "y": 1},
-    ]
+) -> list[dict[str, Any]]:
+    """Build the staff-interview scene(s). The eight Q&A pairs are flattened
+    into one ordered stream of message bodies and paginated by
+    `paginate_messages` to stay within the 8192-byte PCE VN scene-pack limit
+    (a single scene routinely doesn't fit ~8 questions' worth of answers --
+    see the byte-budget comment above `SCENE_PACK_HEADER_SIZE`). Pages are
+    chained with plain `jump` commands; only the first page shows the
+    background (it persists across the jump, so repeating it would just
+    spend bytes for no visual effect), and only the last page carries the
+    return-to-title trailer."""
+    all_texts: list[str] = []
     for question, answer in qa_pairs:
-        commands.extend(_messages_for(question))
-        commands.extend(_messages_for(answer))
-    commands.extend(trailer)
-    return {
-        "id": STAFF_INTERVIEW_SCENE_ID,
-        "name": "スタッフインタビュー",
-        "fullScreenBg": False,
-        "commands": commands,
-        "nextSceneId": "",
-    }
+        all_texts.extend(pack_text_into_messages(question))
+        all_texts.extend(pack_text_into_messages(answer))
+
+    pages = paginate_messages(all_texts)
+    scenes: list[dict[str, Any]] = []
+    for index, page_texts in enumerate(pages):
+        commands: list[dict[str, Any]] = []
+        if index == 0:
+            commands.append({"type": "background", "assetId": background_asset_id, "transition": "fade", "fadeOutFrames": 30, "fadeInFrames": 30, "x": 2, "y": 1})
+        commands.extend(_message(t) for t in page_texts)
+        if index + 1 < len(pages):
+            commands.append({"type": "jump", "sceneId": _interview_page_scene_id(index + 1)})
+        else:
+            commands.extend(trailer)
+        scenes.append({
+            "id": _interview_page_scene_id(index),
+            "name": "スタッフインタビュー" if len(pages) == 1 else f"スタッフインタビュー/{index + 1}",
+            "fullScreenBg": False,
+            "commands": commands,
+            "nextSceneId": "",
+        })
+    return scenes
 
 
 def apply_staff_interview(scenes_doc: dict[str, Any], markdown_text: str) -> dict[str, Any]:
@@ -298,7 +379,12 @@ def apply_staff_interview(scenes_doc: dict[str, Any], markdown_text: str) -> dic
         })
 
     assert shared_trailer is not None
-    new_scenes.append(build_interview_scene(qa_pairs, background_asset_id, shared_trailer))
+    interview_scenes = build_interview_scenes(qa_pairs, background_asset_id, shared_trailer)
+    for scene in interview_scenes:
+        if scene["id"] in existing_ids:
+            raise ValidationError(f"refusing to overwrite existing scene: {scene['id']}")
+        existing_ids.add(scene["id"])
+    new_scenes.extend(interview_scenes)
 
     scenes_doc = dict(scenes_doc)
     scenes_doc["scenes"] = list(scenes) + new_scenes

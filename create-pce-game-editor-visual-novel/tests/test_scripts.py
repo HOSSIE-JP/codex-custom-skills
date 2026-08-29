@@ -14,11 +14,30 @@ sys.path.insert(0, str(SCRIPT_DIR))
 
 from apply_pce_menu_shell import apply_menu_shell  # noqa: E402
 from apply_pce_staff_interview import (  # noqa: E402
+    INTERVIEW_PAGE_MESSAGE_BUDGET,
+    SCENE_PACK_BYTE_LIMIT,
+    SCENE_PACK_COMMAND_SIZE,
+    SCENE_PACK_HEADER_SIZE,
+    SCENE_PACK_MESSAGE_SIZE,
+    STAFF_INTERVIEW_QUESTIONS,
     apply_staff_interview,
     find_ending_scenes,
     pack_text_into_messages,
+    paginate_messages,
     parse_staff_interview_markdown,
 )
+
+
+def real_scene_pack_bytes(commands: list[dict]) -> int:
+    """Reimplements pce-vn-scene-pack.js's byte formula independently of the
+    script under test, for end-to-end verification that a generated scene
+    actually stays within the engine's real 8192-byte scene-pack limit."""
+    message_count = sum(1 for c in commands if c.get("type") == "message")
+    total = SCENE_PACK_HEADER_SIZE + len(commands) * SCENE_PACK_COMMAND_SIZE + message_count * SCENE_PACK_MESSAGE_SIZE
+    for c in commands:
+        if c.get("type") == "message":
+            total += 2 * (len(c.get("text", "")) + 1)
+    return total
 from build_integration_manifest import build_manifest  # noqa: E402
 from emit_pce_scenes import cue_mapping, emit  # noqa: E402
 from migrate_pce_v2 import migrate  # noqa: E402
@@ -295,6 +314,28 @@ class StaffInterviewPackingTests(unittest.TestCase):
         self.assertEqual("".join(m.replace("\n", "") for m in messages), text)
 
 
+class StaffInterviewPaginationTests(unittest.TestCase):
+    def test_small_message_set_fits_on_a_single_page(self) -> None:
+        pages = paginate_messages(["短い回答です。", "もう一つ短い回答。"])
+        self.assertEqual(pages, [["短い回答です。", "もう一つ短い回答。"]])
+
+    def test_no_page_exceeds_the_message_budget_and_no_message_is_lost(self) -> None:
+        # Near-max-length (68-entry) messages, enough of them that a single
+        # PCE VN scene pack (8192-byte hard limit) cannot hold them all --
+        # this is the exact shape of bug that slipped through when the whole
+        # interview was written into one scene (confirmed against real
+        # projects in this series: a ~70-message interview reached
+        # 9800-10900 bytes against the 8192 limit).
+        messages = [("これは" + "あ" * 60 + f"{n:03d}。") for n in range(80)]
+        pages = paginate_messages(messages)
+        self.assertGreater(len(pages), 1, "fixture should be large enough to force a split")
+        for page in pages:
+            page_bytes = sum(SCENE_PACK_COMMAND_SIZE + SCENE_PACK_MESSAGE_SIZE + 2 * (len(m) + 1) for m in page)
+            self.assertLessEqual(page_bytes, INTERVIEW_PAGE_MESSAGE_BUDGET)
+        # No message dropped, duplicated, or reordered across the split.
+        self.assertEqual([m for page in pages for m in page], messages)
+
+
 class StaffInterviewApplyTests(unittest.TestCase):
     def _menu_shelled_doc(self, ending_count: int = 1) -> dict:
         scenes = [{"id": "scene_opening", "fullScreenBg": False, "commands": [{"type": "message", "speaker": "", "text": "はじまり。"}], "nextSceneId": "scene_ending_1"}]
@@ -351,6 +392,44 @@ class StaffInterviewApplyTests(unittest.TestCase):
             self.assertEqual(ending["commands"][-1]["choices"][0]["targetSceneId"], "scene_staff_interview")
         interview_scenes = [s for s in result["scenes"] if s["id"] == "scene_staff_interview"]
         self.assertEqual(len(interview_scenes), 1)
+
+    def test_long_transcript_is_paginated_across_scene_pack_safe_scenes(self) -> None:
+        # Reproduces the real bug: a single staff-interview.md with realistic
+        # (not toy-short) answers to all eight questions produced one scene
+        # exceeding the engine's 8192-byte scene-pack limit for 10 of the 18
+        # real projects in this series (up to ~10900 bytes). Build a
+        # comparably long transcript here rather than depending on any real
+        # project's file.
+        long_answer = "。".join(f"これは長い回答の{n}番目の文です" for n in range(1, 40)) + "。"
+        questions = list(STAFF_INTERVIEW_QUESTIONS)
+        long_markdown = "# AIスタッフインタビュー\n\n" + "".join(
+            f"## {n}. {q}\n\n{long_answer}\n\n" for n, q in enumerate(questions, start=1)
+        )
+        doc = self._menu_shelled_doc(ending_count=1)
+        result = apply_staff_interview(doc, long_markdown)
+
+        interview_pages = [s for s in result["scenes"] if s["id"].startswith("scene_staff_interview")]
+        self.assertGreater(len(interview_pages), 1, "fixture should be long enough to force pagination")
+        interview_pages.sort(key=lambda s: s["id"])  # scene_staff_interview, _2, _3, ... sorts correctly as text too since <10 pages
+
+        for page in interview_pages:
+            self.assertLessEqual(real_scene_pack_bytes(page["commands"]), SCENE_PACK_BYTE_LIMIT)
+
+        # First page carries the background; later pages don't repeat it.
+        self.assertEqual(interview_pages[0]["commands"][0]["type"], "background")
+        for page in interview_pages[1:]:
+            self.assertNotEqual(page["commands"][0]["type"], "background")
+
+        # Every non-final page ends by jumping straight to the next page;
+        # the final page ends on the standard return-to-title trailer.
+        expected_ids = [s["id"] for s in interview_pages]
+        for page, next_id in zip(interview_pages[:-1], expected_ids[1:]):
+            self.assertEqual(page["commands"][-1], {"type": "jump", "sceneId": next_id})
+        self.assertEqual(interview_pages[-1]["commands"][-1], {"type": "jump", "sceneId": "01_test"})
+
+        # The ending's choice still targets page 1 specifically.
+        ending = next(s for s in result["scenes"] if s["id"] == "scene_ending_1")
+        self.assertEqual(ending["commands"][-1]["choices"][0]["targetSceneId"], "scene_staff_interview")
 
     def test_rejects_double_apply(self) -> None:
         doc = self._menu_shelled_doc(ending_count=1)
