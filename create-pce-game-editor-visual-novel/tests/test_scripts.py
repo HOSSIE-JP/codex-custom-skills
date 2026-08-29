@@ -13,6 +13,12 @@ SCRIPT_DIR = Path(__file__).resolve().parents[1] / "scripts"
 sys.path.insert(0, str(SCRIPT_DIR))
 
 from apply_pce_menu_shell import apply_menu_shell  # noqa: E402
+from apply_pce_staff_interview import (  # noqa: E402
+    apply_staff_interview,
+    find_ending_scenes,
+    pack_text_into_messages,
+    parse_staff_interview_markdown,
+)
 from build_integration_manifest import build_manifest  # noqa: E402
 from emit_pce_scenes import cue_mapping, emit  # noqa: E402
 from migrate_pce_v2 import migrate  # noqa: E402
@@ -147,6 +153,9 @@ class MenuShellTests(unittest.TestCase):
         self.assertEqual(result["startScene"], "01_test")
         selector = next(s for s in result["scenes"] if s["id"] == "01_test")
         self.assertEqual(selector["name"], "シナリオ選択/01_test_テスト編")
+        title_spritetext = next(c for c in selector["commands"] if c.get("type") == "spritetext" and c.get("slot") == 1)
+        self.assertEqual(title_spritetext["text"], "テスト編")
+        self.assertEqual(title_spritetext["x"], 104)  # (256 - 12*4) // 2, centered for a 4-glyph title
         next_jump = next(c for i, c in enumerate(selector["commands"]) if c.get("type") == "label" and c["name"] == "NEXT_SCR")
         self.assertEqual(selector["commands"][selector["commands"].index(next_jump) + 1], {"type": "jump", "sceneId": "01_test"})
         prev_label_index = next(i for i, c in enumerate(selector["commands"]) if c.get("type") == "label" and c["name"] == "PREV_SCR")
@@ -158,6 +167,14 @@ class MenuShellTests(unittest.TestCase):
             {"type": "audio", "kind": "psg", "action": "stop", "assetId": "", "channel": 0, "target": "bgm"},
             {"type": "jump", "sceneId": "01_test"},
         ])
+
+    def test_title_spritetext_x_centers_by_display_name_length(self) -> None:
+        scenes_doc, config = self.menu_shell_fixture()
+        config["scenarios"][0]["displayName"] = "百物語の夜"  # 5 glyphs
+        result = apply_menu_shell(scenes_doc, config)
+        selector = next(s for s in result["scenes"] if s["id"] == "01_test")
+        title_spritetext = next(c for c in selector["commands"] if c.get("type") == "spritetext" and c.get("slot") == 1)
+        self.assertEqual(title_spritetext["x"], 98)  # (256 - 12*5) // 2
 
     def test_rejects_ending_scene_id_not_present_in_scenes_document(self) -> None:
         scenes_doc, config = self.menu_shell_fixture()
@@ -176,6 +193,177 @@ class MenuShellTests(unittest.TestCase):
         once = apply_menu_shell(scenes_doc, config)
         with self.assertRaises(ValidationError):
             apply_menu_shell(once, config)
+
+
+# Mirrors the three decoration styles actually found across the series'
+# already-written staff-interview.md files: '**N. question**' (bold, used by
+# 001), '## N. question' (heading+number, used by most), and '## question'
+# (heading, no leading number, used by a few) -- the parser must tolerate
+# all three since it is applied retroactively to existing files.
+SAMPLE_MARKDOWN = """# AIスタッフインタビュー
+
+**対象作品**: テスト作品
+
+---
+
+**1. 今回のゲームでは、どんな仕事を担当しましたか？**
+
+短い回答です。
+
+## 2. 自分の担当で、一番見てほしいところはどこですか？
+
+ここも短い回答です。
+
+## 制作中、一番苦労したことは何でしたか？
+
+これは十七文字を超える一文になるように書かれた長めの回答です。読点も、途中に、いくつか含めています。そして二つ目の文もここに続きます。
+
+## 人間のディレクターについて、率直にどんな印象を持ちましたか？
+
+好印象でした。
+
+## この機会だから言っておきたい愚痴はありますか？
+
+特にありません。
+
+## 完成したゲームを見て、今どう感じていますか？
+
+満足しています。
+
+## もし次回作があるなら、何をやってみたいですか？
+
+新しい構成に挑戦したいです。
+
+## 最後に、ここまで遊んでくれたプレイヤーへ一言お願いします。
+
+ありがとうございました。
+"""
+
+
+class StaffInterviewMarkdownTests(unittest.TestCase):
+    def test_parses_all_eight_fixed_questions_across_mixed_decoration_styles(self) -> None:
+        pairs = parse_staff_interview_markdown(SAMPLE_MARKDOWN)
+        self.assertEqual(len(pairs), 8)
+        self.assertEqual(pairs[0], ("Q1 今回のゲームでは、どんな仕事を担当しましたか？", "短い回答です。"))
+        self.assertEqual(pairs[1][0], "Q2 自分の担当で、一番見てほしいところはどこですか？")
+        self.assertIn("読点も", pairs[2][1])
+        self.assertEqual(pairs[7][0], "Q8 最後に、ここまで遊んでくれたプレイヤーへ一言お願いします。")
+        self.assertEqual(pairs[7][1], "ありがとうございました。")
+
+    def test_rejects_markdown_with_no_question_headings(self) -> None:
+        with self.assertRaises(ValidationError):
+            parse_staff_interview_markdown("ただの文章で見出しがありません。")
+
+    def test_rejects_when_last_question_has_no_answer_text(self) -> None:
+        truncated = SAMPLE_MARKDOWN.rsplit("ありがとうございました。", 1)[0]
+        with self.assertRaises(ValidationError):
+            parse_staff_interview_markdown(truncated)
+
+
+class StaffInterviewPackingTests(unittest.TestCase):
+    def _assert_within_budget(self, messages: list[str]) -> None:
+        for body in messages:
+            lines = body.split("\n")
+            self.assertLessEqual(len(lines), 4)
+            for line in lines:
+                self.assertLessEqual(len(line), 17)
+            self.assertLessEqual(sum(len(line) for line in lines) + (len(lines) - 1), 68)
+
+    def test_short_text_fits_on_a_single_line_with_no_wrap(self) -> None:
+        messages = pack_text_into_messages("短い回答です。")
+        self.assertEqual(messages, ["短い回答です。"])
+
+    def test_text_longer_than_one_line_wraps_within_one_message(self) -> None:
+        text = "これは十七文字を超える一文になるように書かれた回答です。"
+        messages = pack_text_into_messages(text)
+        self.assertEqual(len(messages), 1)
+        self.assertIn("\n", messages[0])
+        self._assert_within_budget(messages)
+        self.assertEqual(messages[0].replace("\n", ""), text)
+
+    def test_long_answer_spans_multiple_messages_and_preserves_all_text(self) -> None:
+        text = "。".join(f"これは{n}番目の短い文です" for n in range(1, 30)) + "。"
+        messages = pack_text_into_messages(text)
+        self.assertGreater(len(messages), 1)
+        self._assert_within_budget(messages)
+        self.assertEqual("".join(m.replace("\n", "") for m in messages), text)
+
+    def test_single_sentence_with_no_punctuation_still_hard_wraps_safely(self) -> None:
+        text = "あ" * 130  # no 。/、 anywhere, forces the hard-wrap fallback
+        messages = pack_text_into_messages(text)
+        self._assert_within_budget(messages)
+        self.assertEqual("".join(m.replace("\n", "") for m in messages), text)
+
+
+class StaffInterviewApplyTests(unittest.TestCase):
+    def _menu_shelled_doc(self, ending_count: int = 1) -> dict:
+        scenes = [{"id": "scene_opening", "fullScreenBg": False, "commands": [{"type": "message", "speaker": "", "text": "はじまり。"}], "nextSceneId": "scene_ending_1"}]
+        ending_ids = [f"scene_ending_{n}" for n in range(1, ending_count + 1)]
+        for i, ending_id in enumerate(ending_ids):
+            scenes.append({"id": ending_id, "fullScreenBg": False, "commands": [{"type": "message", "speaker": "", "text": f"結末{i + 1}。"}], "nextSceneId": ""})
+        scenes_doc = {"version": 2, "settings": {}, "startScene": "scene_opening", "scenes": scenes}
+        config = {"formatVersion": 1, "scenarios": [{
+            "selectorId": "01_test", "slug": "01_test", "displayName": "テスト編",
+            "titleBgAssetId": "bg_test_title", "startSceneId": "scene_opening", "endingSceneIds": ending_ids,
+        }]}
+        return apply_menu_shell(scenes_doc, config)
+
+    def test_find_ending_scenes_matches_only_the_real_trailer_shape(self) -> None:
+        doc = self._menu_shelled_doc(ending_count=1)
+        endings = find_ending_scenes(doc)
+        self.assertEqual([s["id"] for s in endings], ["scene_ending_1"])
+        # A scene that merely ends in a 'jump' (but not the full 4-command
+        # trailer) must not be mistaken for an ending.
+        doc["scenes"].append({"id": "scene_decoy", "fullScreenBg": False, "commands": [{"type": "jump", "sceneId": "01_test"}], "nextSceneId": ""})
+        endings_after = find_ending_scenes(doc)
+        self.assertEqual([s["id"] for s in endings_after], ["scene_ending_1"])
+
+    def test_single_ending_gets_choice_and_shared_interview_scene(self) -> None:
+        doc = self._menu_shelled_doc(ending_count=1)
+        result = apply_staff_interview(doc, SAMPLE_MARKDOWN)
+        ending = next(s for s in result["scenes"] if s["id"] == "scene_ending_1")
+        self.assertEqual(ending["commands"][-1], {
+            "type": "choice",
+            "choices": [
+                {"label": "スタッフインタビューを見る", "value": 0, "targetSceneId": "scene_staff_interview"},
+                {"label": "タイトルに戻る", "value": 1, "targetSceneId": "scene_ending_1_finish"},
+            ],
+            "defaultIndex": 0,
+        })
+        finish = next(s for s in result["scenes"] if s["id"] == "scene_ending_1_finish")
+        self.assertEqual(finish["commands"], [
+            {"type": "wait", "frames": 240},
+            {"type": "effect", "effect": "fadeOut", "frames": 90, "intensity": 0, "color": "#000000"},
+            {"type": "audio", "kind": "psg", "action": "stop", "assetId": "", "channel": 0, "target": "bgm"},
+            {"type": "jump", "sceneId": "01_test"},
+        ])
+        interview = next(s for s in result["scenes"] if s["id"] == "scene_staff_interview")
+        self.assertEqual(interview["commands"][0], {"type": "background", "assetId": "bg_test_title", "transition": "fade", "fadeOutFrames": 30, "fadeInFrames": 30, "x": 2, "y": 1})
+        self.assertEqual(interview["commands"][-1], {"type": "jump", "sceneId": "01_test"})
+        self.assertTrue(any(c.get("type") == "message" and "短い回答です" in c.get("text", "") for c in interview["commands"]))
+
+    def test_three_endings_all_get_the_choice_and_share_one_interview_scene(self) -> None:
+        doc = self._menu_shelled_doc(ending_count=3)
+        result = apply_staff_interview(doc, SAMPLE_MARKDOWN)
+        for n in (1, 2, 3):
+            ending = next(s for s in result["scenes"] if s["id"] == f"scene_ending_{n}")
+            self.assertEqual(ending["commands"][-1]["type"], "choice")
+            self.assertEqual(ending["commands"][-1]["choices"][0]["targetSceneId"], "scene_staff_interview")
+        interview_scenes = [s for s in result["scenes"] if s["id"] == "scene_staff_interview"]
+        self.assertEqual(len(interview_scenes), 1)
+
+    def test_rejects_double_apply(self) -> None:
+        doc = self._menu_shelled_doc(ending_count=1)
+        once = apply_staff_interview(doc, SAMPLE_MARKDOWN)
+        with self.assertRaises(ValidationError):
+            apply_staff_interview(once, SAMPLE_MARKDOWN)
+
+    def test_rejects_when_no_ending_scene_is_present(self) -> None:
+        scenes_doc = {"version": 2, "settings": {}, "startScene": "01_test", "scenes": [
+            {"id": "01_test", "fullScreenBg": False, "commands": [{"type": "background", "assetId": "bg_test_title", "transition": "fade", "x": 2, "y": 1}], "nextSceneId": ""},
+        ]}
+        with self.assertRaises(ValidationError):
+            apply_staff_interview(scenes_doc, SAMPLE_MARKDOWN)
 
 
 class SpriteTests(unittest.TestCase):

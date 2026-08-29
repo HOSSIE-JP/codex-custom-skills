@@ -19,7 +19,7 @@ Scene/asset `id` values are never restructured with slashes or numeric prefixes 
 Each selectable route gets one PCE scene with `commands`:
 
 1. one `background` (that route's title art);
-2. two `spritetext` overlays — a fixed arrow label (e.g. `"← シナリオ選択 →"`) and the route's display name;
+2. two `spritetext` overlays — a fixed arrow label (e.g. `"← シナリオ選択 →"`) and the route's display name, horizontally centered on the 256px-wide screen: `x = (256 - 12 * len(displayName)) // 2` (SpriteText draws one glyph per 12px pitch — `VN_GLYPH_W` — see `vn_port_sprite.c`'s `draw_spritetext_slots_impl`). `centered_spritetext_x()` in `apply_pce_menu_shell.py` is the single source of truth for this; do not hardcode an `x` value for the title line;
 3. three `inputcheck` commands:
    - confirm: `{buttons:["run","i"], mode:"async", targetLabel:""}` — falls through to the very next command when not triggered, which is a `jump` straight into that route's first story scene;
    - right: `{mode:"async", targetLabel:"NEXT_SCR"}` — jumps to a same-scene `label` that then jumps to the neighboring selector scene's `id`;

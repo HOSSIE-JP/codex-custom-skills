@@ -32,6 +32,15 @@ from pce_vn_common import ValidationError, load_json, write_json
 DEFAULT_WAIT_FRAMES = 240
 DEFAULT_FADE_FRAMES = 90
 DEFAULT_ARROW_LABEL = "← シナリオ選択 →"
+# SpriteText draws one glyph per VN_GLYPH_W (12px) pitch against a 256px-wide
+# screen (see vn_engine_config.h / vn_port_sprite.c draw_spritetext_slots_impl).
+# Centering the title line is just (screen width - text pixel width) / 2.
+SPRITETEXT_GLYPH_PX = 12
+SCREEN_WIDTH_PX = 256
+
+
+def centered_spritetext_x(text: str) -> int:
+    return max(0, (SCREEN_WIDTH_PX - SPRITETEXT_GLYPH_PX * len(text)) // 2)
 
 
 def _scenario_field(scenario: dict[str, Any], field: str) -> Any:
@@ -61,7 +70,7 @@ def build_selector_scene(scenario: dict[str, Any], prev_id: str, next_id: str) -
             {"type": "audio", "kind": "psg", "action": "stop", "assetId": "", "channel": stop_channel_on_entry, "target": "all"},
             {"type": "background", "assetId": title_bg_asset_id, "transition": "fade", "fadeOutFrames": 30, "fadeInFrames": 30, "x": 2, "y": 1},
             {"type": "spritetext", "slot": 0, "text": arrow_label, "x": 70, "y": 150, "color": "#ffffff", "blinkFrames": 60, "visible": True},
-            {"type": "spritetext", "slot": 1, "text": display_name, "x": 48, "y": 172, "color": "#ffffff", "blinkFrames": 0, "visible": True},
+            {"type": "spritetext", "slot": 1, "text": display_name, "x": centered_spritetext_x(display_name), "y": 172, "color": "#ffffff", "blinkFrames": 0, "visible": True},
             {"type": "inputcheck", "buttons": ["run", "i"], "mode": "async", "targetLabel": ""},
             {"type": "inputcheck", "buttons": ["right"], "mode": "async", "targetLabel": "NEXT_SCR"},
             {"type": "inputcheck", "buttons": ["left"], "mode": "sync", "targetLabel": "PREV_SCR"},
